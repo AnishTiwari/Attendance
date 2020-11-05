@@ -1,0 +1,3 @@
+.form-control::placeholder { background-color: black !important;} /* Chrome, Firefox, Opera*/
+:-ms-input-placeholder.form-control { background-color: black !important; }  /* Internet Explorer*/
+.form-control::-ms-input-placeholder { background-color: black !important; }  /* Microsoft Edge*/

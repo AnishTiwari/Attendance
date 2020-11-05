@@ -1,0 +1,76 @@
+<html>
+  <head>
+    <link
+      rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+      integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+      crossorigin="anonymous"
+    />
+  </head>
+  <body style="background-color: black !important;">
+    <div
+      class="jumbotron d-flex align-items-center"
+      style="background-color: black !important;"
+    >
+      <div class="container-fluid">
+        <div class="col-xl-4 col-lg-5 col-sm-5 mx-auto col-md-1">
+          <h3 class="h2 text-white text-center">Log In</h3>
+          <div class="text-center">
+            <label class="text-white"
+              >Use fingerprint sensor to give your attendance</label
+            >
+          </div>
+          <form
+            [formGroup]="loginform"
+            class="justify-content-center align-items-center"
+            (ngSubmit)="submitform(loginform)"
+          >
+            <div class="form-group row mt-5">
+              <div class="col" id="inputrollno">
+                <label for="inputrollno" class="text-white">Your Rollno</label>
+
+                <input
+                  type="text"
+                  formControlName="inputrollno"
+                  spellcheck="false"
+                  class="form-control border text-white form-control-sm"
+                  style="
+                    border-radius: 6px;
+                    border-width: 1.9px !important;
+                    color: #e9b000 !important;
+                    background-color: black !important;
+                  "
+                  aria-describedby="inputrollnohelp"
+                  id="inputrollno"
+                />
+                <br />
+                <div class="row justify-content-center mt-5">
+                  <div class="align-items-center col-4">
+                    <button
+                      type="submit"
+                      class="btn btn-primary btn-sm form-control form-control-sm"
+                      style="
+                        cursor: pointer;
+                        border: 0px !important;
+                        color: #e9b000 !important;
+                        background-color: black !important;
+                      "
+                      id="submit"
+                    >
+                      <img
+                        src="assets/icons/fingerprint.svg"
+                        class="text-center"
+                        width="50px"
+                        height="50px"
+                      />
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

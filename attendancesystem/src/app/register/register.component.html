@@ -1,0 +1,63 @@
+<html>
+
+<head>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+</head>
+<body style="background-color: black !important;">
+<div class="jumbotron d-flex align-items-center " style="background-color: black !important;">
+  <div class="container-fluid ">
+    <div class="col-xl-4 col-lg-5 col-sm-5 mx-auto col-md-1 ">
+    <h3 class="h2 text-white text-center">Sign In</h3>
+    <div class="text-center">
+          <label class="text-white ">Please fill out this form for registering to the attendance portal.</label>
+    </div>
+    <form [formGroup] = "registerform" class="justify-content-center align-items-center" (ngSubmit)="submitform(registerform)" >
+      
+        <div class="form-group row mt-5 ">
+          <div class="col " id="username">
+            
+            <label for="firstname" class="text-white">Your Name</label>
+          
+          <input type="text" formControlName="firstname" spellcheck="false" class="form-control border text-white form-control-sm " style="border-radius:6px;border-width:1.9px !important;color:#e9b000 !important;background-color: black !important;" aria-describedby="firstnamehelp"  id="firstname">
+          <small id="firstnamehelp" class="form-text text-white">First Name</small>
+        
+        </div>
+        <div class="col">
+          <label for="lastname" style="color: black !important;">Your UserName</label>    
+          
+          <input type="text" formControlName="lastname" spellcheck="false" class="form-control  text-white form-control-sm" style="border-radius:6px;border-width:1.9px !important;color:#e9b000 !important;background-color: black !important;" aria-describedby="lastnamehelp"  id="lastname" >
+          <small id="lastnamehelp" class="form-text text-white">Last Name</small>
+        </div>
+      </div>
+      <div class="form-group row">
+        <div class="col">
+              <label for="inputemail" class="text-white"  >Your E-mail Address</label>
+        <input type="email" formControlName="inputemail" spellcheck="false" class="form-control  text-white form-control-sm" style="border-radius:6px;border-width:1.9px !important;color:#e9b000 !important;background-color: black !important;" aria-describedby="emailHelp" id="inputemail" >
+        <small id="emailHelp" class="form-text text-white">We'll never share your email with anyone else.</small>
+      </div>
+    </div>
+      <div class="form-group row">
+        <div class="col">
+        <label for="inputrollno" class="text-white" >Your Rollno</label>
+        <input type="text" formControlName="inputrollno" spellcheck="false" class="form-control text-white form-control-sm" style="border-radius:6px;border-width:1.9px !important;color:#e9b000 !important;background-color: black !important;" id="inputrollno" >
+      </div>
+      </div>
+  
+    <div class="row justify-content-center mt-5">
+     <div class="col-4">
+      <button type="submit" class="btn btn-primary btn-sm form-control form-control-sm" style="cursor:pointer;border-radius:6px;border-width:1.9px !important;color:#e9b000 !important;background-color: black !important;" id="submit" >Register</button>
+    </div>
+      </div>
+      
+     
+      </form>
+      <div class="panel-footer text-center mt-3">
+        <label class="text-white" for="companyname">Developed By <strong style="color: #e9b000;">ANT&M</strong></label>
+      </div>
+  </div>
+  </div>
+  </div>
+  
+</body>
+</html>
