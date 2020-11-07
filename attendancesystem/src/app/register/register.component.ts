@@ -32,6 +32,7 @@ submitform(form:FormGroup){
   this.Register(form);
 }
 
+public reg_err_msg:string;
 
 private b64enc(buf: any) {
   return base64js.fromByteArray(buf)
@@ -122,10 +123,10 @@ private Setlocation(lat:any, long:any){
             
                  
                (credential)=>{
-                console.log("SSSSSSS");
+               
                  const newAssertionForServer = transformNewAssertionForServer(credential);
 
-                 console.log("thi is the thing"+newAssertionForServer);
+                
                  navigator.geolocation.getCurrentPosition((position)  => {
               this.Setlocation(position.coords.latitude, position.coords.longitude),{timeout:10000};
 
@@ -138,7 +139,7 @@ private Setlocation(lat:any, long:any){
                  .add<any[]>('PostAssertionToServer',newAssertionForServer)
                  .subscribe((data: any)=> {console.log("User Registered Successfully!!!");},
                     
-                 (error)=>()=>{console.log("Validation Error from the server");},
+                 (error)=>()=>{this.reg_err_msg="User Already Exists"},
                      ()=>{}
                  );}
 
@@ -148,10 +149,10 @@ private Setlocation(lat:any, long:any){
                  
          },
         error => () => {
-            "error"
+          this.reg_err_msg=   "error"
         },
         () => {
-            "completed"
+          this.reg_err_msg="completed"
         });
   }
 }

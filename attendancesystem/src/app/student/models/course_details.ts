@@ -1,9 +1,10 @@
-import { days } from './days';
+import { days,staff } from './days';
 
 export class course_details {
     course_code: string;
     course_name: string;
-    staff_name: string;
-    days: days[];
+    staff: staff;
+    id:number;
+    schedules: days[];
 
 }

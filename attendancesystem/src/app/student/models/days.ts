@@ -1,9 +1,12 @@
-import { periods } from './periods';
 export class days {
-    day_no: string;
-    public periods: periods[];
-    /**
-     *
-     */
+   day:number;
+   id:number;
+   period:number;
    
 }
+
+export class staff {
+    id: number;
+    staff_id_no: number;
+    staff_name: string;
+ }

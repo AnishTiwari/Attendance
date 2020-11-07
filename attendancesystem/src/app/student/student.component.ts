@@ -4,7 +4,7 @@ import { FormBuilder, FormGroup, FormControl } from "@angular/forms";
 import { BaseService } from '../app.service';
 import { map, tap } from 'rxjs/operators';
 
-import { StudentDashboard } from './models/studentdashboard';
+import { StudentDashboard, History } from './models/studentdashboard';
 import { StudentDashboardInterface } from './models/student-dashboard-interface';
 
 import { pipe } from 'rxjs';
@@ -21,6 +21,7 @@ export class StudentComponent implements OnInit {
 
 
   }
+  public history:History = new History();
   public studentdashboard: StudentDashboard = new StudentDashboard();
   private student_rollno: number;
   private background_color_list: string[] = ["linear-gradient(118deg, #911289, #25b9a4)",
@@ -68,65 +69,80 @@ export class StudentComponent implements OnInit {
       .add<StudentDashboard>('getDashboardDetails', this.formdata)
       .subscribe((data: StudentDashboard) => {
 
+        console.log(data)
         Object.assign(this.studentdashboard, data);
+
+        console.log(this.studentdashboard);
         return this.studentdashboard;
       });
 
-    console.log(this.studentdashboard);
   }
   public periodSub: string;
   public test(id: number) {
     console.log(id);
-    console.log(this.studentdashboard.course_details[id].course_code);
-    this.periodSub = this.studentdashboard.course_details[id].course_code;
-  
+    console.log(this.studentdashboard.courses[id].course_code);
+    this.periodSub = this.studentdashboard.courses[id].course_code;
+
+  }
+
+  //API 
+  public getAttendanceHistory(id:number){
+
+   
+    this.BaseService
+      .addJson<any[]>('get_attendance_history', {"course_code":this.studentdashboard.courses[id].course_code, "rollno":this.studentdashboard.rollno, "staff_code":
+    this.studentdashboard.courses[id].staff.staff_id_no })
+      .subscribe((data: any) => { console.log("GOT ATTENDANCE HISTORY");console.log(data);
+      Object.assign(this.history, data);
+      console.log(this.history);
+      return this.history;
+    });
   }
 
   public submitfeedbackform(form: FormGroup): void {
-    console.log(form.value);
-    this.feedbackform.setControl('course_name',  new FormControl(this.periodSub));
+    console.log(this.periodSub);
+    this.feedbackform.setControl('course_name', new FormControl(this.periodSub));
 
     //TODO : Have a function to which does the below functionality & remove if - else chain
     //set the rating value here
-    
-    if(form.value['onestar'] == '')
-    this.feedbackform.removeControl('onestar');  
-      else{
-        this.feedbackform.removeControl('onestar');  
+
+    if (form.value['onestar'] == '')
+      this.feedbackform.removeControl('onestar');
+    else {
+      this.feedbackform.removeControl('onestar');
       this.feedbackform.addControl('rating', new FormControl('1'));
-      //form.registerControl['rating'] = 1;
+      
     }
-      if(form.value['twostar'] == '')
+    if (form.value['twostar'] == '')
       this.feedbackform.removeControl('twostar');
-      else{
-        this.feedbackform.removeControl('twostar');
+    else {
+      this.feedbackform.removeControl('twostar');
       this.feedbackform.addControl('rating', new FormControl('2'));
-      // form.registerControl['rating'] = 2;
+     
     }
-      if(form.value['threestar'] == '')
+    if (form.value['threestar'] == '')
       this.feedbackform.removeControl('threestar');
-      else{
-        this.feedbackform.removeControl('threestar');
+    else {
+      this.feedbackform.removeControl('threestar');
       this.feedbackform.addControl('rating', new FormControl('3'));
-      // form.registerControl['rating'] = 3;
+      
     }
-      if(form.value['fourstar'] == '')
+    if (form.value['fourstar'] == '')
       this.feedbackform.removeControl('fourstar');
-      else
-      {
-        this.feedbackform.removeControl('fourstar');
+    else {
+      this.feedbackform.removeControl('fourstar');
       this.feedbackform.addControl('rating', new FormControl('4'));
-      // form.registerControl['rating'] = 4;
+      
     }
-      if(form.value['fivestar'] == '')
+    if (form.value['fivestar'] == '')
       this.feedbackform.removeControl('fivestar');
-      else{
-        console.log("******************************************");
-        this.feedbackform.removeControl('fivestar');
+    else {
+      
+      this.feedbackform.removeControl('fivestar');
       this.feedbackform.addControl('rating', new FormControl('5'));
-      // form.registerControl['rating'] = 5;
+     
     }
-    
+
 
     this.BaseService
       .addJson<any[]>('postFeedback', form.value)
@@ -217,9 +233,9 @@ export class StudentComponent implements OnInit {
 
     var formdata = {
       "rollno": this.studentdashboard.rollno,
-      "staff_name": this.studentdashboard.course_details,
+      "staff_name": "", // this.studentdashboard.courses[0].course_name,
       "IsPresent": "True",
-      "Course_Code": this.studentdashboard.course_details,
+      "Course_Code": "", //this.studentdashboard.courses[0].course_code,
       "Date": Date.now()
 
     }
@@ -272,3 +288,4 @@ export class StudentComponent implements OnInit {
 
   }
 }
+

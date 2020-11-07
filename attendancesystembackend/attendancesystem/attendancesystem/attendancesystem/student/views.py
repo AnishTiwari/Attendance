@@ -1,14 +1,15 @@
-import os
 import datetime
+import os
+
 from flask import Blueprint
 from flask import request, make_response, jsonify
 from webauthn import webauthn
-from . import util
-from .models import User, db, Location, Attendance, Course, StaffStudent, EnrolledCourse, Staff, Period, CourseSchedule, \
-    StaffAssigned, Feedback
-from .types import FeedbackSchema
 
-ADDR: str = 'd8a074ee9f89.ngrok.io'
+from . import util
+from .models import User, db, Location, Attendance, Feedback
+from .types import *
+
+ADDR: str = '3b47b12fa9c5.ngrok.io'
 
 student = Blueprint('student', __name__)
 
@@ -134,7 +135,7 @@ def verify_credential_info():
             emailid=emailid,
             rollno=rollno,
             icon_url='https://img.icons8.com/material-sharp/24/000000/cloud-network.png',
-            locations=location,
+
         )
 
         db.session.add(user)
@@ -144,7 +145,7 @@ def verify_credential_info():
 
     print('Successfully registered as {}.'.format(username))
 
-    return jsonify({'success': 'User successfully registered.'})
+    return jsonify({'success': 'User successfully registered.', 'status': 200})
 
 
 @student.route('/verify_assertion_for_login', methods=['POST'])
@@ -201,134 +202,23 @@ def verify_assertion():
     })
 
 
-def serialize_message_dashboard(data):
-    # dict = {}
-    # for i in range(0, len(data)):
-    #     print(i)
-    #     values = data[i]
-    #     if values[0] not in dict:
-    #         dict["course_name"] = values[0]
-    #
-    # print(dict)
-
-    dict = {
-        "rollno": "1601016",
-        "course_details": [{
-            "course_name": "Test_Course",
-            "course_code": "16CS251",
-            "staff_name": "Test Staff1",
-            "days": [
-                {
-                    "day_no": '1',
-
-                    'periods': [
-                        {"period_no": "1",
-                         "start_time": "10:10:10",
-                         "end_time": "12:12:12",
-                         "is_sensor": "1"
-                         },
-                        {
-                            "period_no": "7",
-                            "start_time": "16:10:10",
-                            "end_time": "17:00:00",
-                            "is_sensor": "0"
-                        }
-                    ]
-                }
-                ,
-                {
-                    "day_no": '3',
-                    "periods": [
-                        {"period_no": "3",
-                         "start_time": "10:10:10",
-                         "end_time": "12:12:12",
-                         "is_sensor": "1"
-
-                         }]
-
-                },
-                {
-                    'day_no': '4',
-                    "periods":
-                        [
-                            {
-                                "period_no": '3',
-                                "start_time": "10:10:10",
-                                "end_time": "12:12:12",
-                                "is_sensor": "1"
-
-                            }
-                        ]
-                }
-
-            ]}
-
-            ,
-            {
-                "course_name": "Text_Course",
-                "course_code": "16CS252",
-                "staff_name": "Test Staff2",
-                "days": [{
-                    'day_no': '1',
-                    'periods': [
-
-                        {
-                            "period_no": "5",
-                            "start_time": "10:10:10",
-                            "end_time": "12:12:12",
-                            "is_sensor": "1"
-
-                        }]
-                }]
-            }, {
-                "course_name": "Text_Course",
-                "course_code": "16CS252",
-                "staff_name": "Test Staff2",
-                "days": [{
-                    'day_no': '1',
-                    'periods': [
-
-                        {
-                            "period_no": "5",
-                            "start_time": "10:10:10",
-                            "end_time": "12:12:12",
-                            "is_sensor": "1"
-
-                        }]
-                }]
-            }
-
-        ]
-    }
-
-    return dict
-
-
 @student.route('getDashboardDetails', methods=["POST"])
 def GetDashboardData():
-    student_rollno = 4  # request.form.get('student_rollno')
+    student_rollno = 1601014  # " #request.form.get('student_rollno')
     print(student_rollno)
-    course_details_list = db.session.query(Course.course_name, Staff.staff_name, Course.course_code, CourseSchedule.day,
-                                           Period.period_no, Period.IsFingerprint, Period.start_time, Period.end_time) \
-        .select_from(Course).join(EnrolledCourse).join(StaffAssigned).join(Staff).join(StaffStudent).join(
-        CourseSchedule).join(Period).filter(
-        User.rollno == student_rollno).all()
-    print(course_details_list)
-    # for i in range (0,len(course_details_list)):
-    #     #course_day = (CourseDay.query.with_entities(CourseDay.day).join(Course).filter(CourseDay.course_id == int(course_details_list[i]['course_id'])).all())
-    #     print(course_day)
-    #     out = [item for t in course_day for item in t]
-    #     course_details_list[i]['course_days'] = out
-    return make_response((serialize_message_dashboard(course_details_list)), 200)
+    fetch_user = db.session.query(User).filter(User.rollno == student_rollno).first()
+    print(fetch_user)
+    user = DashboardSchema()
+    user_json = user.dump(fetch_user)
+    print(user_json)
+    return jsonify(user_json)
 
 
 # API : feedback POST
 @student.route('postFeedback', methods=["POST"])
 def get_feedback():
     data = request.json
-    print("FEEDBACK GOT IS :")
     print(data)
-
     feedback_ = FeedbackSchema()
     feed = feedback_.load(data)
     f = Feedback(**feed)
@@ -336,3 +226,14 @@ def get_feedback():
     db.session.commit()
 
     return make_response("Your Feedback has been received anonymously", 200)
+
+# API : GetAttendance history
+@student.route('get_attendance_history', methods=["POST"])
+def get_attendance_history():
+    data = request.json
+    attendance_history = db.session.query(Attendance).filter(Attendance.roll_no == data['rollno']).filter(Attendance.staff_id == data['staff_code'])\
+        .filter(Attendance.course_code == data['course_code']).all()
+    attendance_history_ = AttendanceHistorySchema(many=True)
+    post_json = attendance_history_.dump(attendance_history)
+    print(post_json)
+    return jsonify({"history": post_json})
