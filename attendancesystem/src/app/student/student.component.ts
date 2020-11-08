@@ -182,6 +182,7 @@ export class StudentComponent implements OnInit {
     this.longitude = long;
   }
 
+  //API : postattendance
   public PostAttendance(id: number) {
     console.log(id);
     this.Login(id);
@@ -233,11 +234,10 @@ export class StudentComponent implements OnInit {
 
     var formdata = {
       "rollno": this.studentdashboard.rollno,
-      "staff_name": "", // this.studentdashboard.courses[0].course_name,
-      "IsPresent": "True",
-      "Course_Code": "", //this.studentdashboard.courses[0].course_code,
-      "Date": Date.now()
-
+      "staff_code":  this.studentdashboard.courses[id].staff.staff_id_no,
+     
+      "course_code": this.studentdashboard.courses[id].course_code,
+     
     }
     this.BaseService
       .add<any[]>('login', formdata)
@@ -257,15 +257,17 @@ export class StudentComponent implements OnInit {
 
 
                 console.log("_____________" + this.latitude);
-                data["latitude"] =
+                formdata["latitude"] =
                   this.latitude;
-                data["longitude"] =
+                formdata["longitude"] =
                   this.longitude;
 
                 console.log(data);
-
+data["rollno"] = formdata.rollno;
+data["staff_code"] = formdata.staff_code;
+data["course_code"] = formdata.course_code;
                 this.BaseService
-                  .add<any[]>('verify_assertion_for_login', data)
+                  .add<any[]>('verify_assertion_for_attendance', data)
                   .subscribe((data: any) => {
                     console.log(data);
                     console.log("USER LOGGED IN");

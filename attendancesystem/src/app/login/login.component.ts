@@ -96,7 +96,7 @@ export class LoginComponent implements OnInit {
 
 
     var formdata = {
-      "login_rollno": submitdata.value.inputrollno
+      "rollno": submitdata.value.inputrollno
     }
     this.BaseService
       .add<any[]>('login', formdata)

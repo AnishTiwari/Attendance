@@ -9,7 +9,7 @@ from . import util
 from .models import User, db, Location, Attendance, Feedback
 from .types import *
 
-ADDR: str = '3b47b12fa9c5.ngrok.io'
+ADDR: str = 'd36409348e46.ngrok.io'
 
 student = Blueprint('student', __name__)
 
@@ -50,7 +50,7 @@ def register_student():
 
 @student.route('/login', methods=['POST'])
 def webauthn_begin_assertion():
-    rollno = request.form.get('login_rollno')
+    rollno = request.form.get('rollno')
 
     user = User.query.filter_by(rollno=rollno).first()
 
@@ -150,10 +150,47 @@ def verify_credential_info():
 
 @student.route('/verify_assertion_for_login', methods=['POST'])
 def verify_assertion():
+
+    challenge = request.cookies.get('challenge')
+
+    assertion_response = request.form
+    credential_id = assertion_response.get('id')
+
+    user = User.query.filter_by(credential_id=credential_id).first()
+    if not user:
+        return make_response(jsonify({'fail': 'User does not exist.'}), 401)
+
+    webauthn_user = webauthn.WebAuthnUser(
+        user.ukey, user.username, user.display_name, user.icon_url,
+        user.credential_id, user.pub_key, user.sign_count, user.rp_id)
+
+    webauthn_assertion_response = webauthn.WebAuthnAssertionResponse(
+        webauthn_user,
+        assertion_response,
+        challenge,
+        ORIGIN,
+        uv_required=False)  # User Verification
+
+    sign_count = webauthn_assertion_response.verify()
+
+    # Update counter.
+    user.sign_count = sign_count
+    db.session.add(user)
+    db.session.commit()
+
+    return jsonify({
+        'success':
+            'Successfully loggedin as {}'.format(user.username)
+    })
+
+
+@student.route('/verify_assertion_for_attendance', methods=['POST'])
+def verify_assertion_attendance():
     latitude = request.form.get("latitude")
     longitude = request.form.get("longitude")
     rollno = request.form.get("rollno")
-    staff_id = request.form.get("staff_id")
+    staff_id = request.form.get("staff_code")
+    course_code = request.form.get("course_code")
     period = request.form.get("period")
 
     challenge = request.cookies.get('challenge')
@@ -182,17 +219,18 @@ def verify_assertion():
     user.sign_count = sign_count
     db.session.add(user)
     db.session.commit()
-    attendance = Attendance.query.filter_by(rollno=rollno, staff_id=staff_id, period=period).first()
+    attendance = Attendance.query.filter_by(roll_no=rollno, staff_id=staff_id).first()
     if attendance:
         return make_response(jsonify({'fail': 'Attendance has already been registered'}), 401)
     location = Location(latitude=latitude, longitude=longitude)
     attendance = Attendance(
-        rollno=rollno,
+        roll_no=rollno,
         staff_id=staff_id,
-        is_present=True,
+        is_present=1,
         logged_time=datetime.datetime.now(),
         period=period,
-        locations=location
+        location=location,
+        course_code=course_code
     )
     db.session.add(attendance)
     db.session.commit()
