@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, FormControl } from "@angular/forms";
+import {MatSnackBar} from '@angular/material/snack-bar';
 
 import * as base64js from 'base64-js';
 import { BaseService } from '../app.service';
@@ -11,19 +12,22 @@ import { BaseService } from '../app.service';
 })
 export class LoginComponent implements OnInit {
 
-  constructor(private BaseService: BaseService) { }
+  constructor(private BaseService: BaseService, private matsnackbar: MatSnackBar) { }
 
   loginform: FormGroup;
+
   ngOnInit(): void {
+
     this.loginform = new FormGroup({
       inputrollno: new FormControl('')
+    });
 
-    })
   }
 
   submitform(form: FormGroup) {
     this.Login(form);
   }
+
   private b64enc(buf: any) {
     return base64js.fromByteArray(buf)
       .replace(/\+/g, "-")
@@ -43,14 +47,17 @@ export class LoginComponent implements OnInit {
       })
       .join("");
   }
+
   public latitude: any;
 
   public longitude: any;
+
   private Setlocation(lat: any, long: any) {
-    console.log(lat, long)
+    console.log(lat, long);
     this.latitude = lat;
     this.longitude = long;
   }
+
   Login(submitdata: any): void {
 
     const transformCredentialRequestOptions = (credentialRequestOptionsFromServer) => {
@@ -94,10 +101,10 @@ export class LoginComponent implements OnInit {
       };
     };
 
-
     var formdata = {
       "rollno": submitdata.value.inputrollno
-    }
+    };
+
     this.BaseService
       .add<any[]>('login', formdata)
       .subscribe((data: any) => {
@@ -106,23 +113,29 @@ export class LoginComponent implements OnInit {
           publicKey: transformCredentialRequestOptions(data)
 
         })
-
+        .catch((e)=>{
+          
+          console.log(e);
+          this.matsnackbar.open(e, "error", {
+            duration: 3000,
+          });
+          
+          return Promise.reject('Location error');
+          })
           .then(
             (result) => {
+              
               var data = transformAssertionForServer(result);
 
               navigator.geolocation.getCurrentPosition((position) => {
                 this.Setlocation(position.coords.latitude, position.coords.longitude), { timeout: 10000 };
 
-
-                console.log("_____________" + this.latitude);
-                data["latitude"] =
-                  this.latitude;
-                data["longitude"] =
-                  this.longitude;
-
-                console.log(data);
-
+                // console.log("_____________" + this.latitude);
+                // data["latitude"] =
+                //   this.latitude;
+                // data["longitude"] =
+                //   this.longitude;
+              
                 this.BaseService
                   .add<any[]>('verify_assertion_for_login', data)
                   .subscribe((data: any) => {
@@ -130,19 +143,23 @@ export class LoginComponent implements OnInit {
                     console.log("USER LOGGED IN");
                     () => { this.BaseService.setUsername(data.login_rollno); }
 
-                  })
+                  },
+                  error => () => {
+                    console.log("error");
+                  },
+                  () => {
+                    console.log("completed");
+                  });
               })
             },
 
-
           )
-      },
-
-        error => () => {
-          "error"
+       },
+        error => {
+          console.log("error");
         },
         () => {
-          "completed"
+          console.log("completed");
         });
 
   }

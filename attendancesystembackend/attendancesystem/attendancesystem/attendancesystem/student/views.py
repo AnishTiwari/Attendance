@@ -6,10 +6,10 @@ from flask import request, make_response, jsonify
 from webauthn import webauthn
 
 from . import util
-from .models import User, db, Location, Attendance, Feedback
+from .models import User, db, Location, Attendance, Feedback, Course
 from .types import *
 
-ADDR: str = 'd36409348e46.ngrok.io'
+ADDR: str = '06e9040ff9fb.ngrok.io'
 
 student = Blueprint('student', __name__)
 
@@ -222,6 +222,12 @@ def verify_assertion_attendance():
     attendance = Attendance.query.filter_by(roll_no=rollno, staff_id=staff_id).first()
     if attendance:
         return make_response(jsonify({'fail': 'Attendance has already been registered'}), 401)
+
+    # check if the attendance is given at the correct lat, long
+    loc = Course.query.filter_by(latitude=latitude, longitude=longitude).first()
+    if loc:
+        return make_response(jsonify({'fail': 'Location Incorrect, Please be at correct location'}), 401)
+
     location = Location(latitude=latitude, longitude=longitude)
     attendance = Attendance(
         roll_no=rollno,

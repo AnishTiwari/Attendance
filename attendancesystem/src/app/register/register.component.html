@@ -12,14 +12,9 @@
     <div class="text-center">
           <label class="text-white ">Please fill out this form for registering to the attendance portal.</label>
     </div>
-    <div class="toast">
-      <div class="toast-header">
-        Registration
-      </div>
-      <div class="toast-body">
-        {{reg_err_msg}}
-      </div>
-    </div>
+    
+   
+
     <form [formGroup] = "registerform" class="justify-content-center align-items-center" (ngSubmit)="submitform(registerform)" >
       
         <div class="form-group row mt-5 ">

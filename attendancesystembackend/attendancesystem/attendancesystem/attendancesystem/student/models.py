@@ -21,7 +21,8 @@ class Course(db.Model):
     users = db.relationship("User", secondary=user_course, backref=db.backref("courses"))
     staff = db.relationship("Staff", backref="course", uselist=False)
     schedules = db.relationship("Schedule", secondary=schedule_course, backref=db.backref("courses"))
-
+    latitude = db.Column(db.Numeric(9, 7))
+    longitude = db.Column(db.Numeric(9, 7))
 
 class User(db.Model):
     __tablename__ = 'user'

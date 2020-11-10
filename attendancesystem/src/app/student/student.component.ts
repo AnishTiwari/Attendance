@@ -3,6 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, FormControl } from "@angular/forms";
 import { BaseService } from '../app.service';
 import { map, tap } from 'rxjs/operators';
+import {MatSnackBar} from '@angular/material/snack-bar';
 
 import { StudentDashboard, History } from './models/studentdashboard';
 import { StudentDashboardInterface } from './models/student-dashboard-interface';
@@ -17,11 +18,11 @@ import * as base64js from 'base64-js';
 })
 export class StudentComponent implements OnInit {
   feedbackform: FormGroup;
-  constructor(private BaseService: BaseService) {
+  constructor(private BaseService: BaseService, private matsnackbar: MatSnackBar) {
 
 
   }
-  public history:History = new History();
+  public history: History = new History();
   public studentdashboard: StudentDashboard = new StudentDashboard();
   private student_rollno: number;
   private background_color_list: string[] = ["linear-gradient(118deg, #911289, #25b9a4)",
@@ -86,17 +87,19 @@ export class StudentComponent implements OnInit {
   }
 
   //API 
-  public getAttendanceHistory(id:number){
+  public getAttendanceHistory(id: number) {
 
-   
     this.BaseService
-      .addJson<any[]>('get_attendance_history', {"course_code":this.studentdashboard.courses[id].course_code, "rollno":this.studentdashboard.rollno, "staff_code":
-    this.studentdashboard.courses[id].staff.staff_id_no })
-      .subscribe((data: any) => { console.log("GOT ATTENDANCE HISTORY");console.log(data);
-      Object.assign(this.history, data);
-      console.log(this.history);
-      return this.history;
-    });
+      .addJson<any[]>('get_attendance_history', {
+        "course_code": this.studentdashboard.courses[id].course_code, "rollno": this.studentdashboard.rollno, "staff_code":
+          this.studentdashboard.courses[id].staff.staff_id_no
+      })
+      .subscribe((data: any) => {
+        console.log("GOT ATTENDANCE HISTORY"); console.log(data);
+        Object.assign(this.history, data);
+        console.log(this.history);
+        return this.history;
+      });
   }
 
   public submitfeedbackform(form: FormGroup): void {
@@ -111,38 +114,37 @@ export class StudentComponent implements OnInit {
     else {
       this.feedbackform.removeControl('onestar');
       this.feedbackform.addControl('rating', new FormControl('1'));
-      
+
     }
     if (form.value['twostar'] == '')
       this.feedbackform.removeControl('twostar');
     else {
       this.feedbackform.removeControl('twostar');
       this.feedbackform.addControl('rating', new FormControl('2'));
-     
+
     }
     if (form.value['threestar'] == '')
       this.feedbackform.removeControl('threestar');
     else {
       this.feedbackform.removeControl('threestar');
       this.feedbackform.addControl('rating', new FormControl('3'));
-      
+
     }
     if (form.value['fourstar'] == '')
       this.feedbackform.removeControl('fourstar');
     else {
       this.feedbackform.removeControl('fourstar');
       this.feedbackform.addControl('rating', new FormControl('4'));
-      
+
     }
     if (form.value['fivestar'] == '')
       this.feedbackform.removeControl('fivestar');
     else {
-      
+
       this.feedbackform.removeControl('fivestar');
       this.feedbackform.addControl('rating', new FormControl('5'));
-     
-    }
 
+    }
 
     this.BaseService
       .addJson<any[]>('postFeedback', form.value)
@@ -234,11 +236,10 @@ export class StudentComponent implements OnInit {
 
     var formdata = {
       "rollno": this.studentdashboard.rollno,
-      "staff_code":  this.studentdashboard.courses[id].staff.staff_id_no,
-     
+      "staff_code": this.studentdashboard.courses[id].staff.staff_id_no,
       "course_code": this.studentdashboard.courses[id].course_code,
-     
-    }
+    };
+
     this.BaseService
       .add<any[]>('login', formdata)
       .subscribe((data: any) => {
@@ -247,45 +248,51 @@ export class StudentComponent implements OnInit {
           publicKey: transformCredentialRequestOptions(data)
 
         })
+          .then((result) => {
+            let data = transformAssertionForServer(result);
 
-          .then(
-            (result) => {
-              var data = transformAssertionForServer(result);
-
-              navigator.geolocation.getCurrentPosition((position) => {
-                this.Setlocation(position.coords.latitude, position.coords.longitude), { timeout: 10000 };
+            navigator.geolocation.getCurrentPosition((position) => {
+              this.Setlocation(position.coords.latitude, position.coords.longitude), { timeout: 10000 };
 
 
-                console.log("_____________" + this.latitude);
-                formdata["latitude"] =
-                  this.latitude;
-                formdata["longitude"] =
-                  this.longitude;
+              console.log("_____________" + this.latitude);
+              data["latitude"] =
+                this.latitude;
+             data["longitude"] =
+                this.longitude;
 
-                console.log(data);
-data["rollno"] = formdata.rollno;
-data["staff_code"] = formdata.staff_code;
-data["course_code"] = formdata.course_code;
-                this.BaseService
-                  .add<any[]>('verify_assertion_for_attendance', data)
-                  .subscribe((data: any) => {
-                    console.log(data);
-                    console.log("USER LOGGED IN");
+              data["rollno"] = formdata.rollno;
+              data["staff_code"] = formdata.staff_code;
+              data["course_code"] = formdata.course_code;
 
+              this.BaseService
+                .add<any[]>('verify_assertion_for_attendance', data)
+                .subscribe((data: any) => {
+                  console.log(data);
+                  console.log("USER LOGGED IN");
+                })
+            }
+            ,(error) =>{
+              this.matsnackbar.open(error.message, "error", {
+                duration: 3000,
+             });
 
-                  })
-              })
-            },
+             return Promise.reject('Location error');
+
+            }
+            
+            )
+          },
 
 
           )
       },
 
         error => () => {
-          "error"
+          "error";
         },
         () => {
-          "completed"
+          "completed";
         });
 
   }

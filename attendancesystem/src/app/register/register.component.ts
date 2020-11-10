@@ -2,9 +2,11 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, FormControl } from "@angular/forms";
 import * as base64js from 'base64-js';
 import { BaseService } from '../app.service';
+import { Router } from '@angular/router';
+import {MatSnackBar} from '@angular/material/snack-bar';
+
 
 @Component({
-  //encapsulation:ViewEncapsulation.None,
   selector: 'app-register',
   templateUrl: './register.component.html',
   styleUrls: ['./register.component.css']
@@ -13,19 +15,19 @@ export class RegisterComponent implements OnInit {
  
   registerform:FormGroup;
   
-  constructor(private BaseService: BaseService) {  }
+  constructor(private BaseService: BaseService, private _router: Router, private matsnackbar: MatSnackBar ) {  }
 
   ngOnInit()
   {
       this.registerform= new FormGroup({
       
-      firstname :new FormControl(''),
-      lastname :new FormControl(''),
-      inputemail :new FormControl(''),
-      inputrollno :new FormControl('')
+        firstname :new FormControl(''),
+        lastname :new FormControl(''),
+        inputemail :new FormControl(''),
+        inputrollno :new FormControl('')
 
-      })
-} 
+      });
+  } 
 
 submitform(form:FormGroup){
   
@@ -62,13 +64,13 @@ private Setlocation(lat:any, long:any){
   this.longitude = long;
 }
 
-  Register(submitdata:any): void {
+ async Register(submitdata:any): Promise<void> {
        var formdata =
          {
             "register_username":submitdata.value.firstname + submitdata.value.lastname,
             "register_emailid":submitdata.value.inputemail,
             "register_rollno":submitdata.value.inputrollno
-          }
+          };
           
           const transformCredentialCreateOptions = (credentialCreateOptionsFromServer) => {
             let {challenge, user} = credentialCreateOptionsFromServer;
@@ -114,45 +116,64 @@ private Setlocation(lat:any, long:any){
       }
 
     this.BaseService
-        .add<any[]>('register_student',formdata)
-        .subscribe((data: any) =>{ 
-         
+        .add<any[]>('register_student', formdata)
+        .subscribe(
+          (data: any) =>{ 
+
                navigator.credentials.create({
-               publicKey: transformCredentialCreateOptions(data)
-                 }).then(
-            
-                 
-               (credential)=>{
-               
+                publicKey: transformCredentialCreateOptions(data)
+                 })
+                .then((credential)=>{
                  const newAssertionForServer = transformNewAssertionForServer(credential);
 
-                
                  navigator.geolocation.getCurrentPosition((position)  => {
-              this.Setlocation(position.coords.latitude, position.coords.longitude),{timeout:10000};
+                  this.Setlocation(position.coords.latitude, position.coords.longitude),{timeout:10000};
 
-              newAssertionForServer["latitude"]= 
-              this.latitude;
-              newAssertionForServer["longitude"]=
-                   this.longitude;
-             
+                  newAssertionForServer["latitude"]= 
+                  this.latitude;
+                  newAssertionForServer["longitude"]=
+                      this.longitude;
+                
                  this.BaseService
                  .add<any[]>('PostAssertionToServer',newAssertionForServer)
-                 .subscribe((data: any)=> {console.log("User Registered Successfully!!!");},
+                 .subscribe((data: any)=> {
+                   console.log("User Registered Successfully!!!");
+                  },
                     
-                 (error)=>()=>{this.reg_err_msg="User Already Exists"},
+                 (error)=>()=>{  this.matsnackbar.open(error.message, "error", {
+                  duration: 3000,
+               });
+               return Promise.reject('Location error');
+              },
                      ()=>{}
-                 );}
-
                  );
+
+                },
+                  (error) =>{
+
+                    this.matsnackbar.open(error.message, "error", {
+                      duration: 3000,
+                   });
+
+                   return Promise.reject('Location error');
+                 });
                      
-               })
+               });
+              //  .then(()=>{this._router.navigateByUrl('login');})
                  
          },
         error => () => {
-          this.reg_err_msg=   "error"
+          this.matsnackbar.open(error.message, "error", {
+            duration: 3000,
+         });
+         return Promise.reject('Location error');
         },
         () => {
-          this.reg_err_msg="completed"
-        });
+          // this._router.navigateByUrl('login');
+        })
+        ;
+
+        // await this._router.navigateByUrl('login');
+
   }
 }

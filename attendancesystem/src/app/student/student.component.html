@@ -15,14 +15,14 @@
     type="text/javascript"
     src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
   ></script>
-  <body style="background-color: black !important; width: 100%;">
+  <body style="background-color: black !important; width: 100%">
     <div
       class="modal fade"
       id="form"
       tabindex="-1"
       role="dialog"
-      
-      aria-hidden="true">
+      aria-hidden="true"
+    >
       <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
           <div class="text-right cross">
@@ -35,98 +35,114 @@
               width="100"
             />
             <div class="comment-box text-center">
-              <form [formGroup] = "feedbackform" (ngSubmit)="submitfeedbackform(feedbackform)" >
-      <input type="hidden" formControlName="course_name" name="course_name"   value={{periodSub}} id="periodSub" />
-              <h4>Add a feedback</h4>
-              <div class="rating">
-                <input type="radio" formControlName="fivestar" name="fivestar" value="5" id="5" /><label
-                  for="5"
-                  >☆</label
-                >
-                <input type="radio" formControlName="fourstar" name="fourstar" value="4" id="4" /><label
-                  for="4"
-                  >☆</label
-                >
-                <input type="radio" formControlName="threestar" name="threestar" value="3" id="3" /><label
-                  for="3"
-                  >☆</label
-                >
-                <input type="radio" formControlName="twostar" name="twostar" value="2" id="2" /><label
-                  for="2"
-                  >☆</label
-                >
-                <input type="radio" formControlName="onestar" name="onestar" value="1" id="1" /><label
-                  for="1"
-                  >☆</label
-                >
-              </div>
-              <div class="comment-area">
-                <textarea style="font-family: monospace;
-                font-size: 15px;"
-                  class="form-control" formControlName="comment"
-                  placeholder="Give your feedback here"
-                  rows="4"
-                ></textarea>
-              </div>
-              <div class="text-center mt-4">
-                <button class="btn btn-success send px-5">
-                  Send Anonymously
-                  <i class="fa fa-long-arrow-right ml-1"></i>
-                </button>
-              </div>
+              <form
+                [formGroup]="feedbackform"
+                (ngSubmit)="submitfeedbackform(feedbackform)"
+              >
+                <input
+                  type="hidden"
+                  formControlName="course_name"
+                  name="course_name"
+                  value="{{ periodSub }}"
+                  id="periodSub"
+                />
+                <h4>Add a feedback</h4>
+                <div class="rating">
+                  <input
+                    type="radio"
+                    formControlName="fivestar"
+                    name="fivestar"
+                    value="5"
+                    id="5"
+                  /><label for="5">☆</label>
+                  <input
+                    type="radio"
+                    formControlName="fourstar"
+                    name="fourstar"
+                    value="4"
+                    id="4"
+                  /><label for="4">☆</label>
+                  <input
+                    type="radio"
+                    formControlName="threestar"
+                    name="threestar"
+                    value="3"
+                    id="3"
+                  /><label for="3">☆</label>
+                  <input
+                    type="radio"
+                    formControlName="twostar"
+                    name="twostar"
+                    value="2"
+                    id="2"
+                  /><label for="2">☆</label>
+                  <input
+                    type="radio"
+                    formControlName="onestar"
+                    name="onestar"
+                    value="1"
+                    id="1"
+                  /><label for="1">☆</label>
+                </div>
+                <div class="comment-area">
+                  <textarea
+                    style="font-family: monospace; font-size: 15px"
+                    class="form-control"
+                    formControlName="comment"
+                    placeholder="Give your feedback here"
+                    rows="4"
+                  ></textarea>
+                </div>
+                <div class="text-center mt-4">
+                  <button class="btn btn-success send px-5">
+                    Send Anonymously
+                    <i class="fa fa-long-arrow-right ml-1"></i>
+                  </button>
+                </div>
               </form>
             </div>
           </div>
         </div>
       </div>
-    </div> 
+    </div>
 
-      <!-- Data Modal Starts From Here -->
+    <!-- Data Modal Starts From Here -->
 
     <div
       class="modal fade"
       id="datamodal"
       tabindex="-1"
       role="dialog"
-      
-      aria-hidden="true">
+      aria-hidden="true"
+    >
       <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
           <div class="text-right cross">
             <i class="fa fa-times mr-2"></i>
           </div>
           <div class="card-body text-center">
-            
-
-            
-          <table class="table table-dark">
-            <thead>
-              <tr>
-                <th scope="col">#</th>
-                <th scope="col">Logged Time</th>
-                <th scope="col">Latitude</th>
-                <th scope="col">Longitude</th>
-              </tr>
-            </thead>
-            <tbody  *ngFor="let h of history.history;index as i">
-
-              <tr>
-                <th scope="row">{{ i+1 }}</th>
-                <td>{{ h.logged_time }}</td>
-                <td>{{ h.location.latitude }}</td>
-                <td>{{ h.location.longitude  }}</td>
-              </tr>
-          </tbody>
-          </table>
-        
-
-        
-
-
+            <table class="table table-dark">
+              <thead>
+                <tr>
+                  <th scope="col">#</th>
+                  <th scope="col">Logged Time</th>
+                  <th scope="col">Latitude</th>
+                  <th scope="col">Longitude</th>
+                </tr>
+              </thead>
+              <tbody *ngFor="let h of history.history; index as i">
+                <tr>
+                  <th scope="row">{{ i + 1 }}</th>
+                  <td>{{ h.logged_time }}</td>
+                  <td>{{ h.location.latitude }}</td>
+                  <td>{{ h.location.longitude }}</td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </div>
       </div>
-    </div> 
+    </div>
 
     <nav class="navbar navbar-default navbar-fixed-top navbar-dark bg-dark p-1">
       <a class="navbar-brand" href="#">Dashboard</a>
@@ -134,13 +150,13 @@
     <div class="container-fluid mx-auto mt-2">
       <div>
         <h3 class="h2 text-white text-center">Enrolled Courses</h3>
-        <div style="font-family: serif;
-        font-weight: 900;"
+        <div
+          style="font-family: serif; font-weight: 900"
           class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5"
         >
           <div
             class="col mb-4"
-            *ngFor="let details of studentdashboard.courses;index as i"
+            *ngFor="let details of studentdashboard.courses; index as i"
           >
             <div [ngStyle]="{ background: getRandomColor() }" class="card">
               <div class="">
@@ -159,7 +175,7 @@
                   <div class="row justify-content-center">
                     <div class="align-items-center col-4">
                       <button
-                      data-toggle="modal"
+                        data-toggle="modal"
                         data-target="#datamodal"
                         ng-show="details.is_attendance == true"
                         type="submit"
@@ -171,7 +187,7 @@
                           box-shadow: 0 0 2px 2px #000;
                         "
                         id="submit"
-                        (click) ="getAttendanceHistory(i);"
+                        (click)="getAttendanceHistory(i)"
                       >
                         <img
                           src="assets/icons/data.png"
@@ -179,7 +195,6 @@
                           width="25px"
                           height="20px"
                         />
-                        
                       </button>
                     </div>
 
@@ -193,7 +208,7 @@
                           border: 0px !important;
                           background: inherit;
                         "
-                        (click)="PostAttendance(i);"
+                        (click)="PostAttendance(i)"
                         id="submit"
                       >
                         <img
@@ -216,7 +231,8 @@
                           border: 0px !important;
                           color: #ffbf00 !important;
                           background-color: white !important;
-                        " (click)="test(i);"
+                        "
+                        (click)="test(i)"
                         id="submit"
                       >
                         <img
@@ -235,6 +251,5 @@
         </div>
       </div>
     </div>
-    
   </body>
 </html>

@@ -9,6 +9,7 @@ import {
 } from '@angular/common/http';
 import { Observable,EMPTY, throwError } from 'rxjs';
 import { catchError, finalize } from 'rxjs/operators';
+import {MatSnackBar} from '@angular/material/snack-bar';
 
 
 import {LoaderService} from './loader/loader.service';
@@ -18,7 +19,7 @@ import {LoaderService} from './loader/loader.service';
 })
 export class CustomInterceptor implements HttpInterceptor {
 
-    constructor(private loaderservice: LoaderService){};
+    constructor(private loaderservice: LoaderService, private matsnackbar: MatSnackBar){};
 
     private ShowLoader() {
         this.loaderservice.show();
@@ -44,18 +45,23 @@ export class CustomInterceptor implements HttpInterceptor {
                 console.error('An error occurred:', error.error.message);
               }
                else {
+
                 // The backend returned an unsuccessful response code.
                 // The response body may contain clues as to what went wrong,
-                console.error(`Backend returned code ${error.status}, body was: ${error.error}`);
+                console.error(`Backend returned code ${error.status}, body was: ${JSON.stringify(error.error["fail"])}`);
+               
+                    this.matsnackbar.open(JSON.stringify(error.error["fail"]), "error", {
+                      duration: 2000,
+                   });
+                 
               }
       
              
       
-              // If you want to return the error on the upper level:
-             // return throwError(error);
+              return throwError(error);
       
               // or just return nothing:
-              return EMPTY;
+              //return EMPTY;
             }),
             finalize(()=>{this.HideLoader()})
             );
