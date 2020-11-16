@@ -3,10 +3,9 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, FormControl } from "@angular/forms";
 import { BaseService } from '../app.service';
 import { map, tap } from 'rxjs/operators';
-import {MatSnackBar} from '@angular/material/snack-bar';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 import { StudentDashboard, History } from './models/studentdashboard';
-import { StudentDashboardInterface } from './models/student-dashboard-interface';
 
 import { pipe } from 'rxjs';
 import * as base64js from 'base64-js';
@@ -57,7 +56,7 @@ export class StudentComponent implements OnInit {
       fourstar: new FormControl(''),
       fivestar: new FormControl(''),
       comment: new FormControl(''),
-      course_name: new FormControl(''),
+      course_code: new FormControl(''),
 
     });
 
@@ -66,6 +65,7 @@ export class StudentComponent implements OnInit {
     this.formdata = {
       "student_rollno": this.student_rollno
     }
+
     this.BaseService
       .add<StudentDashboard>('getDashboardDetails', this.formdata)
       .subscribe((data: StudentDashboard) => {
@@ -75,9 +75,16 @@ export class StudentComponent implements OnInit {
 
         console.log(this.studentdashboard);
         return this.studentdashboard;
-      });
+      }
+        , (error) => {
+          this.matsnackbar.open(error.message, "error", {
+            duration: 3000,
+          });
 
+        }
+      );
   }
+
   public periodSub: string;
   public test(id: number) {
     console.log(id);
@@ -99,12 +106,19 @@ export class StudentComponent implements OnInit {
         Object.assign(this.history, data);
         console.log(this.history);
         return this.history;
-      });
+      },
+        (error) => {
+          this.matsnackbar.open(error.message, "error", {
+            duration: 3000,
+          });
+        }
+      );
   }
 
+  //API: send feedback
   public submitfeedbackform(form: FormGroup): void {
     console.log(this.periodSub);
-    this.feedbackform.setControl('course_name', new FormControl(this.periodSub));
+    this.feedbackform.setControl('course_code', new FormControl(this.periodSub));
 
     //TODO : Have a function to which does the below functionality & remove if - else chain
     //set the rating value here
@@ -148,7 +162,19 @@ export class StudentComponent implements OnInit {
 
     this.BaseService
       .addJson<any[]>('postFeedback', form.value)
-      .subscribe((data: any) => { console.log(data); })
+      .subscribe((data: any) => { console.log(data); },
+        (error) => {
+          this.matsnackbar.open(error.message, "error", {
+            duration: 3000,
+          });
+          return Promise.reject('Location error');
+        },
+        ()=>{ this.matsnackbar.open("Feedback sent", "success", {
+          duration: 3000,
+        });}
+        
+
+      )
   }
 
 
@@ -258,7 +284,7 @@ export class StudentComponent implements OnInit {
               console.log("_____________" + this.latitude);
               data["latitude"] =
                 this.latitude;
-             data["longitude"] =
+              data["longitude"] =
                 this.longitude;
 
               data["rollno"] = formdata.rollno;
@@ -272,15 +298,15 @@ export class StudentComponent implements OnInit {
                   console.log("USER LOGGED IN");
                 })
             }
-            ,(error) =>{
-              this.matsnackbar.open(error.message, "error", {
-                duration: 3000,
-             });
+              , (error) => {
+                this.matsnackbar.open(error.message, "error", {
+                  duration: 3000,
+                });
 
-             return Promise.reject('Location error');
+                return Promise.reject('Location error');
 
-            }
-            
+              }
+
             )
           },
 

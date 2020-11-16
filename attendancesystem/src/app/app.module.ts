@@ -13,6 +13,8 @@ import { LoaderComponent } from './loader/loader.component';
 import { LoginComponent } from './login/login.component';
 import { StudentComponent } from './student/student.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { ProfessorComponent } from './professor/professor.component';
+import { SubjectComponent } from './subject/subject.component';
 
 @NgModule({
   declarations: [
@@ -20,7 +22,9 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
     RegisterComponent,
     LoaderComponent,
     LoginComponent,
-    StudentComponent
+    StudentComponent,
+    ProfessorComponent,
+    SubjectComponent
   ],
   imports: [
     BrowserModule,

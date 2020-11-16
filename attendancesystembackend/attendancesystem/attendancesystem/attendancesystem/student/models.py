@@ -4,6 +4,14 @@ from attendancesystem.attendancesystem import db
 # based on the input given in the entitytypes.xml file
 
 
+class Staff(db.Model):
+    __tablename__ = 'staff'
+    id = db.Column(db.Integer, primary_key=True)
+    staff_name = db.Column(db.String(40))
+    staff_id_no = db.Column(db.Integer)
+    courses = db.relationship("Course", backref="staff")
+
+
 user_course = db.Table("user_course",
                        db.Column("course_id", db.Integer, db.ForeignKey("course.id")),
                        db.Column("user_id", db.Integer, db.ForeignKey("user.id")))
@@ -18,33 +26,26 @@ class Course(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     course_name = db.Column(db.String(40))
     course_code = db.Column(db.String(40))
+    latitude = db.Column(db.Integer)
+    longitude = db.Column(db.Integer)
+    staff_id = db.Column(db.Integer, db.ForeignKey('staff.id'))
     users = db.relationship("User", secondary=user_course, backref=db.backref("courses"))
-    staff = db.relationship("Staff", backref="course", uselist=False)
     schedules = db.relationship("Schedule", secondary=schedule_course, backref=db.backref("courses"))
-    latitude = db.Column(db.Numeric(9, 7))
-    longitude = db.Column(db.Numeric(9, 7))
+
 
 class User(db.Model):
     __tablename__ = 'user'
     id = db.Column(db.Integer, primary_key=True)
-    ukey = db.Column(db.String(140))
+    ukey = db.Column(db.String(240))
     display_name = db.Column(db.String(40))
-    pub_key = db.Column(db.String(140))
+    pub_key = db.Column(db.String(240))
     sign_count = db.Column(db.Integer)
     username = db.Column(db.String(40))
     emailid = db.Column(db.String(40))
     rollno = db.Column(db.Integer)
-    rp_id = db.Column(db.String(140))
-    icon_url = db.Column(db.String(140))
-    credential_id = db.Column(db.String(140))
-
-
-class Staff(db.Model):
-    __tablename__ = 'staff'
-    id = db.Column(db.Integer, primary_key=True)
-    staff_name = db.Column(db.String(40))
-    staff_id_no = db.Column(db.Integer)
-    course_id = db.Column(db.Integer, db.ForeignKey('course.id'), unique=True)
+    rp_id = db.Column(db.String(240))
+    icon_url = db.Column(db.String(240))
+    credential_id = db.Column(db.String(240))
 
 
 class Location(db.Model):
@@ -81,3 +82,4 @@ class Feedback(db.Model):
     rating = db.Column(db.Integer)
     comment = db.Column(db.String(40))
     course_code = db.Column(db.String(40))
+

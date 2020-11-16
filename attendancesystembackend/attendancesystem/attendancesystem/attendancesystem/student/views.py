@@ -9,7 +9,7 @@ from . import util
 from .models import User, db, Location, Attendance, Feedback, Course
 from .types import *
 
-ADDR: str = '06e9040ff9fb.ngrok.io'
+ADDR: str = '8549a345d82a.ngrok.io'
 
 student = Blueprint('student', __name__)
 
@@ -135,7 +135,6 @@ def verify_credential_info():
             emailid=emailid,
             rollno=rollno,
             icon_url='https://img.icons8.com/material-sharp/24/000000/cloud-network.png',
-
         )
 
         db.session.add(user)
@@ -256,7 +255,6 @@ def GetDashboardData():
     user_json = user.dump(fetch_user)
     print(user_json)
     return jsonify(user_json)
-
 
 # API : feedback POST
 @student.route('postFeedback', methods=["POST"])

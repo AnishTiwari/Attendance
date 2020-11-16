@@ -6,12 +6,15 @@ export class StudentDashboard {
     public courses: course_details[];
     
 }
+
+
 export class Location{
 
     id:number;
     latitude:number;
     longitude:number;
 }
+
 export class AttendanceHistory{
     is_present: boolean;
         logged_time: any ;

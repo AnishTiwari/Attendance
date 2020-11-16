@@ -1,0 +1,59 @@
+<html>
+    <head>
+        <link
+          rel="stylesheet"
+          href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+          crossorigin="anonymous"
+        />
+      </head>
+      <script
+        type="text/javascript"
+        src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"
+      ></script>
+      <script
+        type="text/javascript"
+        src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+      ></script>
+<body style="background-color: black !important; width: 100%">
+<nav class="navbar navbar-default navbar-fixed-top navbar-dark bg-dark p-1">
+    <a class="navbar-brand" href="#" *ngFor="let data of staffdashboard.data; index as i" >{{ data.staff_name  }}'s Dashboard</a>
+  </nav>
+  <div class="container-fluid mx-auto mt-2">
+    <div>
+      <h3 class="h2 text-white text-center">Courses </h3>
+      <div
+        style="font-family: serif; font-weight: 900"
+        class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5"
+      >
+      <div class="col mb-4" style="font-family: monospace;
+      font-size: 20px;"  *ngFor="let data of staffdashboard.data; index as i" >
+        <div
+          class="col mb-4"
+          *ngFor="let course of data.courses; index as j"
+        >
+          <div [ngStyle]="{ background: getRandomColor() }" class="card" (click)="navigateToCourse(j);" >
+            <div class="">
+              <div class="card-body d-flex flex-column">
+                <h5 class="card-title font-weight-bold">
+                  <a
+                    >{{ course.course_code }} -
+                    {{ course.course_name | uppercase }}</a
+                  >
+                </h5>
+                <p class="card-text">
+                  <strong>
+                    Professor's Code : {{ data.staff_id_no }} <br />
+                  </strong>
+                </p>
+               
+              </div>
+            </div>
+          </div>
+        </div>
+    </div>
+      </div>
+    </div>
+  </div>
+</body>
+  </html>
