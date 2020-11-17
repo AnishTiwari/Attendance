@@ -99,3 +99,10 @@ class StaffDashboardProfileSchema(Schema):
     staff_name = fields.Str()
     staff_id_no = fields.Integer()
     courses = fields.Nested('CourseProfileSchema', many=True, exclude=('staff',))
+
+
+class CourseScheduleSchema(Schema):
+    day = fields.Integer()
+    period = fields.Integer()
+    latitude = fields.Integer()
+    longitude = fields.Integer()
