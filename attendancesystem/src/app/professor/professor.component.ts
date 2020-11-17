@@ -66,9 +66,9 @@ public getRandomColor() {
 
 
 public navigateToCourse(course_id){
-  let course_name = this.staffdashboard.data[0].courses[course_id].course_name;
+  let course_name = this.staffdashboard.data[0].courses[course_id].course_code;
 
-  this._router.navigateByUrl('course/'+course_id);
+  this._router.navigateByUrl('course/'+course_name);
 }
 
 }

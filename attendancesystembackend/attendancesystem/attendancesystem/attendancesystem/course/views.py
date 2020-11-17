@@ -9,12 +9,14 @@ course = Blueprint('course', __name__)
 # API: course-profile dashboard page
 @course.route('getCourseSchedule/<variable>', methods=["GET"])
 def get_course_schedule(variable):
-    db_val = db.session.query(Schedule).filter(Course.course_code == variable).all()
+
+    fields = ['latitude', 'longitude']
+    loc = db.session.query(Course).filter(Course.course_code == variable).options(load_only(*fields)).all()
+
+    db_val = db.session.query(Schedule).join(Course,Schedule.courses).filter(Course.course_code == variable).all()
     schd_schema = CourseScheduleSchema(many=True)
     post_json = schd_schema.dump(db_val)
     print(post_json)
-    fields = ['latitude', 'longitude']
-    loc = db.session.query(Course).filter(Course.course_code == variable).options(load_only(*fields)).all()
     print(loc[0].latitude)
 
     return jsonify({"data": post_json, "latitude": loc[0].latitude, "longitude": loc[0].longitude})
