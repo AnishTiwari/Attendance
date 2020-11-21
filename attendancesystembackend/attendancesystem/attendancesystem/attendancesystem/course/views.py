@@ -36,3 +36,21 @@ def update_course_location():
         return jsonify({"data": "Updated location"})
 
 
+@course.route('getstudents/<course_code>', methods=["GET"])
+def get_course_students(course_code):
+    fields = ['username', 'rollno']
+    data = User.query.join(User.courses).filter(Course.course_code == course_code).options(load_only(*fields)).all()
+    print(data)
+    json = StudentsSchema(many=True)
+    val = json.dump(data)
+    return jsonify({"data":val})
+
+
+@course.route('getCourseFeedbacks/<course_code>', methods=["GET"])
+def get_course_feedbacks(course_code):
+    fields = ['rating', 'comment']
+    data = db.session.query(Feedback).filter(Feedback.course_code == course_code).options(load_only(*fields)).all()
+    print(data)
+    json = CourseFeedbackSchema(many=True)
+    val = json.dump(data)
+    return jsonify({"data": val})

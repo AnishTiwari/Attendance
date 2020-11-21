@@ -106,3 +106,15 @@ class CourseScheduleSchema(Schema):
     period = fields.Integer()
     latitude = fields.Integer()
     longitude = fields.Integer()
+
+
+class StudentsSchema(Schema):
+    username = fields.Str()
+    rollno = fields.Integer()
+    emailid = fields.Str()
+
+
+class CourseFeedbackSchema(Schema):
+    rating = fields.Integer()
+    comment = fields.Str()
+

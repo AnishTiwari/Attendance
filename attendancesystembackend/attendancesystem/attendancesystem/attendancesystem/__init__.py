@@ -42,7 +42,7 @@ db.init_app(app)
 @app.after_request
 def after_request(response):
     header = response.headers
-    header['Access-Control-Allow-Origin'] = 'https://a8582010e70e.ngrok.io'
+    header['Access-Control-Allow-Origin'] = 'https://fee28ea13d7c.ngrok.io'
     header['Access-Control-Allow-Credentials'] = 'true'
     header["Access-Control-Allow-Headers"] = 'Origin, X-Requested-With, Content-Type, Accept'
     return response

@@ -15,6 +15,10 @@ import { StudentComponent } from './student/student.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ProfessorComponent } from './professor/professor.component';
 import { SubjectComponent } from './subject/subject.component';
+import { HomeComponent } from './subject/home/home.component';
+import { StudentsComponent } from './subject/students/students.component';
+import { FeedbacksComponent } from './subject/feedbacks/feedbacks.component';
+import { AnalyticsComponent } from './subject/analytics/analytics.component';
 
 @NgModule({
   declarations: [
@@ -24,7 +28,11 @@ import { SubjectComponent } from './subject/subject.component';
     LoginComponent,
     StudentComponent,
     ProfessorComponent,
-    SubjectComponent
+    SubjectComponent,
+    HomeComponent,
+    StudentsComponent,
+    FeedbacksComponent,
+    AnalyticsComponent
   ],
   imports: [
     BrowserModule,
