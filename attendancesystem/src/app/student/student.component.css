@@ -98,3 +98,8 @@ button{
 .rating:hover>input:checked~label:before {
     opacity: 0.4;
 }
+
+button:disabled {
+    cursor: not-allowed !important;
+    pointer-events: all !important;
+  }

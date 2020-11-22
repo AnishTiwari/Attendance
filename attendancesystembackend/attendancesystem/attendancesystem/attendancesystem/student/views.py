@@ -9,7 +9,7 @@ from . import util
 from .models import User, db, Location, Attendance, Feedback, Course
 from .types import *
 
-ADDR: str = 'fee28ea13d7c.ngrok.io'
+ADDR: str = '14ff9b4ecb11.ngrok.io'
 
 student = Blueprint('student', __name__)
 
@@ -137,7 +137,9 @@ def verify_credential_info():
             icon_url='https://img.icons8.com/material-sharp/24/000000/cloud-network.png',
         )
 
-        db.session.add(user)
+        status = db.session.add(user)
+        if not status:
+            return make_response(jsonify({'fail': db.error}), 401)
         db.session.commit()
     else:
         return make_response(jsonify({'fail': 'User already exists.'}), 401)
@@ -179,7 +181,7 @@ def verify_assertion():
 
     return jsonify({
         'success':
-            'Successfully loggedin as {}'.format(user.username)
+            'Successfully logged in as {}'.format(user.username)
     })
 
 
@@ -275,6 +277,9 @@ def get_attendance_history():
     data = request.json
     attendance_history = db.session.query(Attendance).filter(Attendance.roll_no == data['rollno']).filter(Attendance.staff_id == data['staff_code'])\
         .filter(Attendance.course_code == data['course_code']).all()
+    if not attendance_history:
+        print(db.error)
+        return jsonify({'fail': "Attendance history cannot be fetched"}, 401)
     attendance_history_ = AttendanceHistorySchema(many=True)
     post_json = attendance_history_.dump(attendance_history)
     print(post_json)

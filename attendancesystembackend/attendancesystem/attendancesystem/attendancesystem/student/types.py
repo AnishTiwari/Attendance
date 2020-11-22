@@ -19,6 +19,8 @@ class ScheduleSchema(Schema):
     id = fields.Int(dump_only=True)
     day = fields.Integer()
     period = fields.Integer()
+    start_time = fields.Time()
+    end_time = fields.Time()
     courses = fields.Nested('CourseSchema', many=True, exclude=('schedules',))
 
 

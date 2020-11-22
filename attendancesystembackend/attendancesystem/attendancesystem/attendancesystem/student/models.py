@@ -74,7 +74,8 @@ class Schedule(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     day = db.Column(db.Integer)
     period = db.Column(db.Integer)
-
+    start_time = db.Column(db.Time())
+    end_time = db.Column(db.Time())
 
 class Feedback(db.Model):
     __tablename__ = 'feedback'

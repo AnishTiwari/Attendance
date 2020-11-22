@@ -17,6 +17,7 @@ import * as base64js from 'base64-js';
 })
 export class StudentComponent implements OnInit {
   feedbackform: FormGroup;
+  crctTime:boolean[] = [];
   constructor(private BaseService: BaseService, private matsnackbar: MatSnackBar) {
 
 
@@ -72,6 +73,26 @@ export class StudentComponent implements OnInit {
 
         console.log(data)
         Object.assign(this.studentdashboard, data);
+
+        this.studentdashboard.courses.forEach((course, inx)=>{this.crctTime.push(true) ;});
+         this.studentdashboard.courses.forEach((course, index)=>{
+
+         
+          let exists = course.schedules.filter(x=>x.day == new Date().getDay() && x.start_time <=  new Date().getTime()
+           && x.end_time >=  new Date().getTime() );
+
+           if(exists.length >0){
+           
+              this.crctTime[index] = false;
+           
+            
+             console.log(this.crctTime);
+             console.log(exists.length);
+           }
+           console.log(new Date().getDay());
+        })
+
+       
 
         console.log(this.studentdashboard);
         return this.studentdashboard;

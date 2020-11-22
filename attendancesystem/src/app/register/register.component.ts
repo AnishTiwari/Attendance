@@ -138,6 +138,8 @@ private Setlocation(lat:any, long:any){
                  .add<any[]>('PostAssertionToServer',newAssertionForServer)
                  .subscribe((data: any)=> {
                    console.log("User Registered Successfully!!!");
+
+                   this._router.navigateByUrl('login');
                   },
                     
                  (error)=>()=>{  this.matsnackbar.open(error.message, "error", {
