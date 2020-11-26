@@ -6,14 +6,14 @@ from ..student.types import *
 
 course = Blueprint('course', __name__)
 
+
 # API: course-profile dashboard page
 @course.route('getCourseSchedule/<variable>', methods=["GET"])
 def get_course_schedule(variable):
-
     fields = ['latitude', 'longitude']
     loc = db.session.query(Course).filter(Course.course_code == variable).options(load_only(*fields)).all()
 
-    db_val = db.session.query(Schedule).join(Course,Schedule.courses).filter(Course.course_code == variable).all()
+    db_val = db.session.query(Schedule).join(Course, Schedule.courses).filter(Course.course_code == variable).all()
     schd_schema = CourseScheduleSchema(many=True)
     post_json = schd_schema.dump(db_val)
     print(post_json)
@@ -26,8 +26,9 @@ def get_course_schedule(variable):
 def update_course_location():
     data = request.json
     print(data)
-    res = db.session.query(Course).filter(Course.course_code == data['course_code']).update({"latitude": data['latitude'],
-                                                                                       "longitude": data['longitude']})
+    res = db.session.query(Course).filter(Course.course_code == data['course_code']).update(
+        {"latitude": data['latitude'],
+         "longitude": data['longitude']})
 
     if not res:
         return make_response(db.error, 410)
@@ -43,7 +44,7 @@ def get_course_students(course_code):
     print(data)
     json = StudentsSchema(many=True)
     val = json.dump(data)
-    return jsonify({"data":val})
+    return jsonify({"data": val})
 
 
 @course.route('getCourseFeedbacks/<course_code>', methods=["GET"])
@@ -53,4 +54,18 @@ def get_course_feedbacks(course_code):
     print(data)
     json = CourseFeedbackSchema(many=True)
     val = json.dump(data)
+    return jsonify({"data": val})
+
+
+@course.route('<course_code>/getTimeForCourse/<day_period>', methods=["GET"])
+def get_time_for_course(course_code, day_period):
+    day, period = list(day_period)
+
+    loc = db.session.query(Schedule).join(Course, Schedule.courses).filter(Course.course_code == course_code) \
+        .filter(Schedule.day == day, Schedule.period == period).first()
+    print(loc.start_time)
+    json = TimeCourseSchema()
+    val = json.dump(loc)
+    print(val)
+
     return jsonify({"data": val})

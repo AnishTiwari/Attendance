@@ -120,3 +120,7 @@ class CourseFeedbackSchema(Schema):
     rating = fields.Integer()
     comment = fields.Str()
 
+
+class TimeCourseSchema(Schema):
+    start_time = fields.Time()
+    end_time = fields.Time()

@@ -16,6 +16,7 @@ export class FeedbacksComponent implements OnInit {
   constructor(private BaseService: BaseService, private matsnackbar: MatSnackBar, private activatedRoute:ActivatedRoute ) { }
 public Feedbacks:Feedbacks = new Feedbacks();
 public id;
+display="none";
   ngOnInit(): void {
 
     this.id = this.activatedRoute.parent.snapshot.paramMap.get('id');
@@ -31,5 +32,7 @@ public id;
     });
 
   }
+
+ 
 
 }

@@ -9,3 +9,13 @@ export class CourseSchedule{
     latitude:number;
     longitude:number;
 }
+
+
+export class time {
+    start_time=null;
+    end_time=null;
+}
+
+export class timeCourse{
+data:time=null;
+}

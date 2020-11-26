@@ -6,7 +6,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { DOCUMENT } from '@angular/common';
 
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { CourseSchedule } from './models/subject';
+import { CourseSchedule, timeCourse } from './models/subject';
 
 
 @Component({
@@ -17,10 +17,11 @@ import { CourseSchedule } from './models/subject';
 export class HomeComponent implements OnInit {
 
   public courseschedule: CourseSchedule = new CourseSchedule();
+  public timeCourse: timeCourse = new timeCourse();
   public id: string;
-
   constructor(@Inject(DOCUMENT) document, private BaseService: BaseService, private matsnackbar: MatSnackBar, private activatedRoute: ActivatedRoute, private _router: Router) { }
-
+public start_time:string;
+public end_time:string;
 
   CourseLocationForm: FormGroup;
 
@@ -80,4 +81,47 @@ export class HomeComponent implements OnInit {
 
   }
 
+  //Get current location and set it to the form lat & long fields
+  public GetCurrentLocation():void{
+
+    navigator.geolocation.getCurrentPosition((position)  => {
+      
+      this.CourseLocationForm.patchValue({'latitude':position.coords.latitude, 'longitude': position.coords.longitude});
+  },
+  (error)=>{
+    this.matsnackbar.open(error.message, "error", {
+      duration: 5000,
+    });
+    
+  });
+
+  }
+  @ViewChild('timeModal') myModal;
+
+  public openModal(id):void {
+    this.myModal.nativeElement.className = 'modal fade show';
+    var el = this.myModal.nativeElement;
+    el.setAttribute('style', 'display: block;');
+
+    this.BaseService.getAll('course/'+this.id+'/getTimeForCourse/'+id)
+    .subscribe((data)=>{
+      Object.assign(this.timeCourse, data);
+      console.log(this.timeCourse);
+
+      return this.timeCourse;
+    },
+    (error)=>{
+
+      this.matsnackbar.open(error.message, "error", {
+        duration: 5000,
+      });
+      
+    })
+  }
+
+  public closeModal():void {
+     this.myModal.nativeElement.className = 'modal hide';
+     var el = this.myModal.nativeElement;
+     el.setAttribute('style', 'display: none;');
+  }
 }
