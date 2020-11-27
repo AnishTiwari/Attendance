@@ -4,3 +4,5 @@ label{
     font-family: monospace;
     font-size: 17px;
 }
+
+.modal-body{    background-color: lightslategrey !important;}

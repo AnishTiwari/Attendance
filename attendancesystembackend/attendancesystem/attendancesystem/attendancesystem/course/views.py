@@ -69,3 +69,20 @@ def get_time_for_course(course_code, day_period):
     print(val)
 
     return jsonify({"data": val})
+
+
+@course.route('updateTime', methods=["POST"])
+def update_course_time():
+    print(request.json)
+    data = request.json
+    day , period = list(str(data['day_period']));
+    res = db.session.query(Schedule).join(Course, Schedule.courses).filter(Course.course_code == data['course_code']) \
+        .filter(Schedule.day == day, Schedule.period == period).first()
+
+    if not res:
+        return make_response(db.error, 410)
+    else:
+        res.start_time = data['start_time']
+        res.end_time = data['end_time']
+        db.session.commit()
+        return jsonify({"data": "Updated Timings!!!"})

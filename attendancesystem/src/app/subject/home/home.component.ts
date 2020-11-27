@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, ViewChild, OnInit, Inject } from '@angular/core';
+import { AfterViewInit, Component, ViewChild, OnInit, Inject } from '@angular/core';
 
 import { FormBuilder, FormGroup, FormControl } from "@angular/forms";
 import { BaseService } from '../../app.service';
@@ -19,12 +19,13 @@ export class HomeComponent implements OnInit {
   public courseschedule: CourseSchedule = new CourseSchedule();
   public timeCourse: timeCourse = new timeCourse();
   public id: string;
+  public day_period;
   constructor(@Inject(DOCUMENT) document, private BaseService: BaseService, private matsnackbar: MatSnackBar, private activatedRoute: ActivatedRoute, private _router: Router) { }
 public start_time:string;
 public end_time:string;
 
   CourseLocationForm: FormGroup;
-
+  TimeCourseForm: FormGroup;
   ngOnInit() {
 
     this.id = this.activatedRoute.parent.snapshot.paramMap.get('id');
@@ -39,7 +40,7 @@ public end_time:string;
 
         for (let i: number = 0; i < this.courseschedule.data.length; i++) {
           let idString: string = this.courseschedule.data[i].day.toString() + this.courseschedule.data[i].period.toString();
-          document.getElementById(idString).innerHTML = "<img src='assets/images/check.svg' style='height:20px;' >";
+          document.getElementById(idString).innerHTML = "<img src='assets/images/check.svg' style='height:20px; cursor:pointer;' >";
         }
 
         return this.courseschedule;
@@ -57,7 +58,11 @@ public end_time:string;
 
     });
 
-
+    this.TimeCourseForm = new FormGroup({
+      start_time: new FormControl(''),
+      end_time: new FormControl(''),
+day_period: new FormControl('')
+    });
   }
 
   // API to update location of current subject
@@ -108,6 +113,12 @@ public end_time:string;
       Object.assign(this.timeCourse, data);
       console.log(this.timeCourse);
 
+      this.TimeCourseForm.patchValue({
+        'start_time': this.timeCourse?.data?.start_time,
+        'end_time': this.timeCourse?.data?.end_time,
+       'day_period' : id,
+      });
+this.day_period = id;
       return this.timeCourse;
     },
     (error)=>{
@@ -124,4 +135,26 @@ public end_time:string;
      var el = this.myModal.nativeElement;
      el.setAttribute('style', 'display: none;');
   }
+
+//API: Update the time of course
+public updateCourseTime(form: FormGroup){
+  this.TimeCourseForm.addControl('course_code', new FormControl(this.id));
+    // this.TimeCourseForm.patchValue({'start_time':this.timeCourse?.data?.start_time, 'end_time': this.timeCourse?.data?.end_time})
+    console.log(form.value);
+
+    this.BaseService.addJson<any[]>('course/updateTime', form.getRawValue())
+      .subscribe((data: any) => { console.log(data);
+        this.matsnackbar.open(data.data, "success", {
+          duration: 3000,
+        });
+      },
+        (error) => {
+          this.matsnackbar.open(error.message, "error", {
+            duration: 3000,
+          });
+          return Promise.reject('Location error');
+        })
+}
+
+
 }

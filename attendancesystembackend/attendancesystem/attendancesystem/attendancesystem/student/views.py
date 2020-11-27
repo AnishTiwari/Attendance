@@ -9,7 +9,7 @@ from . import util
 from .models import User, db, Location, Attendance, Feedback, Course
 from .types import *
 
-ADDR: str = 'afa3bfd775d8.ngrok.io'
+ADDR: str = '9ba8c82eb2ba.ngrok.io'
 
 student = Blueprint('student', __name__)
 

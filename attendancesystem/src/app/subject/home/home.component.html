@@ -8,11 +8,52 @@
         </button>
       </div>
       <div class="modal-body">
-        <p>{{ timeCourse?.data?.start_time }}</p>
-        <p>{{ timeCourse?.data?.end_time }}</p>
+        <form 
+          [formGroup]="TimeCourseForm"
+          (ngSubmit)="updateCourseTime(TimeCourseForm)"
+        >
+        <input
+        type="hidden"
+        formControlName="day_period"
+        name="day_period"
+        value="{{ day_period }}"
+        id="day_period"
+       />
+        <div class="form-group">
+          <label for="start_time">Start Time</label>
+          <input
+          
+            type="time"
+            formControlName="start_time"
+            id="start_time"
+            name="start_time"
+            class="form-control"
+            value="{{timeCourse?.data?.start_time}}"
+          />
       </div>
+      <div class="form-group">
+        <label for="end_time">End Time</label>
+        <input
+        
+          type="time"
+         
+          formControlName="end_time"
+          id="end_time"
+          name="end_time"
+          class="form-control"
+          value="{{timeCourse?.data?.end_time}}"
+        />
+        </div>
+          <div class="text-center mt-4">
+          <button class="btn btn-success send">
+          Update Timings
+           
+          </button>
+        </div>
+        </form>
     </div>
   </div>
+</div>
 </div>
 
 <div class="container-fluid">
@@ -37,79 +78,79 @@
             <tr>
               <th scope="row">MONDAY</th>
               <td id="11" (click)="openModal(11)" ></td>
-              <td id="12"></td>
-              <td id="13"></td>
-              <td id="14"></td>
-              <td id="15"></td>
-              <td id="16"></td>
-              <td id="17"></td>
-              <td id="18"></td>
+              <td id="12" (click)="openModal(12)"></td>
+              <td id="13" (click)="openModal(13)" ></td>
+              <td id="14" (click)="openModal(14)" ></td>
+              <td id="15" (click)="openModal(15)" ></td>
+              <td id="16" (click)="openModal(16)" ></td>
+              <td id="17" (click)="openModal(17)" ></td>
+              <td id="18" (click)="openModal(18)" ></td>
             </tr>
             <tr>
               <th scope="row">TUESDAY</th>
-              <td id="21"></td>
-              <td id="22"></td>
-              <td id="23"></td>
-              <td id="24"></td>
-              <td id="25"></td>
-              <td id="26"></td>
-              <td id="27"></td>
-              <td id="28"></td>
+              <td id="21" (click)="openModal(21)" ></td>
+              <td id="22" (click)="openModal(22)" ></td>
+              <td id="23" (click)="openModal(23)" ></td>
+              <td id="24" (click)="openModal(24)" ></td>
+              <td id="25" (click)="openModal(25)" ></td>
+              <td id="26" (click)="openModal(26)" ></td>
+              <td id="27" (click)="openModal(27)" ></td>
+              <td id="28" (click)="openModal(28)" ></td>
             </tr>
             <tr>
               <th scope="row">WEDNESDAY</th>
-              <td id="31"></td>
-              <td id="32"></td>
-              <td id="33"></td>
-              <td id="34"></td>
-              <td id="35"></td>
-              <td id="36"></td>
-              <td id="37"></td>
-              <td id="38"></td>
+              <td id="31" (click)="openModal(31)" ></td>
+              <td id="32" (click)="openModal(32)" ></td>
+              <td id="33" (click)="openModal(33)" ></td>
+              <td id="34" (click)="openModal(34)" ></td>
+              <td id="35" (click)="openModal(35)" ></td>
+              <td id="36" (click)="openModal(36)" ></td>
+              <td id="37" (click)="openModal(37)" ></td>
+              <td id="38" (click)="openModal(38)" ></td>
             </tr>
             <tr>
               <th scope="row">THURSDAY</th>
-              <td id="41"></td>
-              <td id="42"></td>
-              <td id="43"></td>
-              <td id="44"></td>
-              <td id="45"></td>
-              <td id="46"></td>
-              <td id="47"></td>
-              <td id="48"></td>
+              <td id="41" (click)="openModal(41)" ></td>
+              <td id="42" (click)="openModal(42)" ></td>
+              <td id="43" (click)="openModal(43)" ></td>
+              <td id="44" (click)="openModal(44)" ></td>
+              <td id="45" (click)="openModal(45)" ></td>
+              <td id="46" (click)="openModal(46)" ></td>
+              <td id="47" (click)="openModal(47)" ></td>
+              <td id="48" (click)="openModal(48)" ></td>
             </tr>
             <tr>
               <th scope="row">FRIDAY</th>
-              <td id="51"></td>
-              <td id="52"></td>
-              <td id="53"></td>
-              <td id="54"></td>
-              <td id="55"></td>
-              <td id="56"></td>
-              <td id="57"></td>
-              <td id="58"></td>
+              <td id="51" (click)="openModal(51)" ></td>
+              <td id="52" (click)="openModal(52)" ></td>
+              <td id="53" (click)="openModal(53)" ></td>
+              <td id="54" (click)="openModal(54)" ></td>
+              <td id="55" (click)="openModal(55)" ></td>
+              <td id="56" (click)="openModal(56)" ></td>
+              <td id="57" (click)="openModal(57)" ></td>
+              <td id="58" (click)="openModal(58)" ></td>
             </tr>
             <tr>
               <th scope="row">SATURDAY</th>
-              <td id="61"></td>
-              <td id="62"></td>
-              <td id="63"></td>
-              <td id="64"></td>
-              <td id="65"></td>
-              <td id="66"></td>
-              <td id="67"></td>
-              <td id="68"></td>
+              <td id="61" (click)="openModal(61)" ></td>
+              <td id="62" (click)="openModal(62)" ></td>
+              <td id="63" (click)="openModal(63)" ></td>
+              <td id="64" (click)="openModal(64)" ></td>
+              <td id="65" (click)="openModal(65)" ></td>
+              <td id="66" (click)="openModal(66)" ></td>
+              <td id="67" (click)="openModal(67)" ></td>
+              <td id="68" (click)="openModal(68)" ></td>
             </tr>
             <tr>
               <th scope="row">SUNDAY</th>
-              <td id="71"></td>
-              <td id="72"></td>
-              <td id="73"></td>
-              <td id="74"></td>
-              <td id="75"></td>
-              <td id="76"></td>
-              <td id="77"></td>
-              <td id="78"></td>
+              <td id="71" (click)="openModal(71)" ></td>
+              <td id="72" (click)="openModal(72)" ></td>
+              <td id="73" (click)="openModal(73)" ></td>
+              <td id="74" (click)="openModal(74)" ></td>
+              <td id="75" (click)="openModal(75)" ></td>
+              <td id="76" (click)="openModal(76)" ></td>
+              <td id="77" (click)="openModal(77)" ></td>
+              <td id="78" (click)="openModal(78)" ></td>
             </tr>
           </tbody>
         </table>
@@ -119,7 +160,7 @@
           [formGroup]="CourseLocationForm"
           (ngSubmit)="updateCourseLoc(CourseLocationForm)"
         >
-        <svg style="background-color: white; float:right;" (click)="GetCurrentLocation();" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M12 8c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm8.94 3c-.46-4.17-3.77-7.48-7.94-7.94V1h-2v2.06C6.83 3.52 3.52 6.83 3.06 11H1v2h2.06c.46 4.17 3.77 7.48 7.94 7.94V23h2v-2.06c4.17-.46 7.48-3.77 7.94-7.94H23v-2h-2.06zM12 19c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7z"/></svg>
+        <svg style="background-color: white; float:right; cursor:pointer;" (click)="GetCurrentLocation();" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M12 8c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm8.94 3c-.46-4.17-3.77-7.48-7.94-7.94V1h-2v2.06C6.83 3.52 3.52 6.83 3.06 11H1v2h2.06c.46 4.17 3.77 7.48 7.94 7.94V23h2v-2.06c4.17-.46 7.48-3.77 7.94-7.94H23v-2h-2.06zM12 19c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7z"/></svg>
 
         <div class="form-group">
           <label for="latitude">LATITUDE</label>
