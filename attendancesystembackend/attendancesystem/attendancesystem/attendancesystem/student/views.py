@@ -9,83 +9,110 @@ from . import util
 from .models import User, db, Location, Attendance, Feedback, Course
 from .types import *
 
-ADDR: str = '9ba8c82eb2ba.ngrok.io'
+ADDR: str = "100b82e41b32.ngrok.io"
 
-student = Blueprint('student', __name__)
+student = Blueprint("student", __name__)
 
 RP_ID = ADDR
-RP_NAME = 'webauthn demo localhost'
-ORIGIN = 'https://' + ADDR
-TRUST_ANCHOR_DIR = 'trusted_attestation_roots'
+RP_NAME = "webauthn demo localhost"
+ORIGIN = "https://" + ADDR
+TRUST_ANCHOR_DIR = "trusted_attestation_roots"
 
 
-@student.route('/register_student', methods=['POST'])
+@student.route("/register_student", methods=["POST"])
 def register_student():
-    username = request.form.get('register_username')
-    emailid = request.form.get('register_emailid')
-    rollno = request.form.get('register_rollno')
+    username = request.form.get("register_username")
+    emailid = request.form.get("register_emailid")
+    rollno = request.form.get("register_rollno")
     display_name = username
     if not util.validate_username(username):
-        return make_response(jsonify({'fail': 'Invalid username.'}), 401)
+        return make_response(jsonify({"fail": "Invalid username."}), 401)
 
     if User.query.filter_by(username=username).first():
-        return make_response(jsonify({'fail': 'User already exists.'}), 401)
+        return make_response(jsonify({"fail": "User already exists."}), 401)
 
     challenge = util.generate_challenge(32)
     ukey = util.generate_ukey()
 
     make_credential_options = webauthn.WebAuthnMakeCredentialOptions(
-        challenge, RP_NAME, RP_ID, ukey, username, display_name,
-        ORIGIN)
+        challenge, RP_NAME, RP_ID, ukey, username, display_name, ORIGIN
+    )
     print(make_credential_options)
     response = make_response(jsonify(make_credential_options.registration_dict), 200)
-    response.set_cookie("challenge", challenge.rstrip('='), httponly=True, samesite='None', secure=True)
-    response.set_cookie("register_ukey", ukey, httponly=True, samesite='None', secure=True)
-    response.set_cookie("register_username", username, httponly=True, samesite='None', secure=True)
-    response.set_cookie("register_rollno", rollno, httponly=True, samesite='None', secure=True)
-    response.set_cookie("register_display_name", display_name, httponly=True, samesite='None', secure=True)
-    response.set_cookie("register_emailid", emailid, httponly=True, samesite='None', secure=True)
+    response.set_cookie(
+        "challenge", challenge.rstrip("="), httponly=True, samesite="None", secure=True
+    )
+    response.set_cookie(
+        "register_ukey", ukey, httponly=True, samesite="None", secure=True
+    )
+    response.set_cookie(
+        "register_username", username, httponly=True, samesite="None", secure=True
+    )
+    response.set_cookie(
+        "register_rollno", rollno, httponly=True, samesite="None", secure=True
+    )
+    response.set_cookie(
+        "register_display_name",
+        display_name,
+        httponly=True,
+        samesite="None",
+        secure=True,
+    )
+    response.set_cookie(
+        "register_emailid", emailid, httponly=True, samesite="None", secure=True
+    )
     return response
 
 
-@student.route('/login', methods=['POST'])
+@student.route("/login", methods=["POST"])
 def webauthn_begin_assertion():
-    rollno = request.form.get('rollno')
+    rollno = request.form.get("rollno")
 
     user = User.query.filter_by(rollno=rollno).first()
 
     if not user:
-        return make_response(jsonify({'fail': 'User does not exist.'}), 401)
+        return make_response(jsonify({"fail": "User does not exist."}), 401)
     if not user.credential_id:
-        return make_response(jsonify({'fail': 'Unknown credential ID.'}), 401)
+        return make_response(jsonify({"fail": "Unknown credential ID."}), 401)
 
     challenge = util.generate_challenge(32)
 
     webauthn_user = webauthn.WebAuthnUser(
-        user.ukey, user.username, user.display_name, user.icon_url,
-        user.credential_id, user.pub_key, user.sign_count, user.rp_id)
+        user.ukey,
+        user.username,
+        user.display_name,
+        user.icon_url,
+        user.credential_id,
+        user.pub_key,
+        user.sign_count,
+        user.rp_id,
+    )
 
     webauthn_assertion_options = webauthn.WebAuthnAssertionOptions(
-        webauthn_user, challenge)
+        webauthn_user, challenge
+    )
 
     response = make_response(jsonify(webauthn_assertion_options.assertion_dict), 200)
-    response.set_cookie("challenge", challenge.rstrip('='), httponly=True, samesite='None', secure=True)
+    response.set_cookie(
+        "challenge", challenge.rstrip("="), httponly=True, samesite="None", secure=True
+    )
     return response
 
 
-@student.route('/PostAssertionToServer', methods=['POST'])
+@student.route("/PostAssertionToServer", methods=["POST"])
 def verify_credential_info():
-    challenge = request.cookies.get('challenge')
-    username = request.cookies.get('register_username')
+    challenge = request.cookies.get("challenge")
+    username = request.cookies.get("register_username")
     display_name = username
-    ukey = request.cookies.get('register_ukey')
-    emailid = request.cookies.get('register_emailid')
-    rollno = request.cookies.get('register_rollno')
-    latitude = request.form.get('latitude')
-    longitude = request.form.get('longitude')
+    ukey = request.cookies.get("register_ukey")
+    emailid = request.cookies.get("register_emailid")
+    rollno = request.cookies.get("register_rollno")
+    latitude = request.form.get("latitude")
+    longitude = request.form.get("longitude")
     registration_response = request.form
     trust_anchor_dir = os.path.join(
-        os.path.dirname(os.path.abspath(__file__)), TRUST_ANCHOR_DIR)
+        os.path.dirname(os.path.abspath(__file__)), TRUST_ANCHOR_DIR
+    )
     print(trust_anchor_dir)
     trusted_attestation_cert_required = True
     self_attestation_permitted = True
@@ -100,28 +127,31 @@ def verify_credential_info():
         trusted_attestation_cert_required,
         self_attestation_permitted,
         none_attestation_permitted,
-        uv_required=False)  # User Verification
+        uv_required=False,
+    )  # User Verification
 
     try:
         webauthn_credential = webauthn_registration_response.verify()
     except Exception as e:
-        return jsonify({'fail': 'Registration failed. Error: {}'.format(e)})
+        return jsonify({"fail": "Registration failed. Error: {}".format(e)})
 
     credential_id_exists = User.query.filter_by(
-        credential_id=webauthn_credential.credential_id).first()
+        credential_id=webauthn_credential.credential_id
+    ).first()
     if credential_id_exists:
-        return make_response(
-            jsonify({
-                'fail': 'Credential ID already exists.'
-            }), 401)
+        return make_response(jsonify({"fail": "Credential ID already exists."}), 401)
 
-    existing_user = User.query.filter_by(username=username, rollno=rollno, emailid=emailid).first()
+    existing_user = User.query.filter_by(
+        username=username, rollno=rollno, emailid=emailid
+    ).first()
     if not existing_user:
         if os.sys.version_info >= (3, 0):
             webauthn_credential.credential_id = str(
-                webauthn_credential.credential_id, "utf-8")
+                webauthn_credential.credential_id, "utf-8"
+            )
             webauthn_credential.public_key = str(
-                webauthn_credential.public_key, "utf-8")
+                webauthn_credential.public_key, "utf-8"
+            )
         location = Location(latitude=latitude, longitude=longitude)
 
         user = User(
@@ -134,43 +164,48 @@ def verify_credential_info():
             rp_id=RP_ID,
             emailid=emailid,
             rollno=rollno,
-            icon_url='https://img.icons8.com/material-sharp/24/000000/cloud-network.png',
+            icon_url="https://img.icons8.com/material-sharp/24/000000/cloud-network.png",
         )
 
         status = db.session.add(user)
         if not status:
-            return make_response(jsonify({'fail': db.error}), 401)
+
+            return make_response(jsonify({"fail": db.error}), 401)
         db.session.commit()
     else:
-        return make_response(jsonify({'fail': 'User already exists.'}), 401)
+        return make_response(jsonify({"fail": "User already exists."}), 401)
 
-    print('Successfully registered as {}.'.format(username))
+    print("Successfully registered as {}.".format(username))
 
-    return jsonify({'success': 'User successfully registered.', 'status': 200})
+    return jsonify({"success": "User successfully registered.", "status": 200})
 
 
-@student.route('/verify_assertion_for_login', methods=['POST'])
+@student.route("/verify_assertion_for_login", methods=["POST"])
 def verify_assertion():
 
-    challenge = request.cookies.get('challenge')
+    challenge = request.cookies.get("challenge")
 
     assertion_response = request.form
-    credential_id = assertion_response.get('id')
+    credential_id = assertion_response.get("id")
 
     user = User.query.filter_by(credential_id=credential_id).first()
     if not user:
-        return make_response(jsonify({'fail': 'User does not exist.'}), 401)
+        return make_response(jsonify({"fail": "User does not exist."}), 401)
 
     webauthn_user = webauthn.WebAuthnUser(
-        user.ukey, user.username, user.display_name, user.icon_url,
-        user.credential_id, user.pub_key, user.sign_count, user.rp_id)
+        user.ukey,
+        user.username,
+        user.display_name,
+        user.icon_url,
+        user.credential_id,
+        user.pub_key,
+        user.sign_count,
+        user.rp_id,
+    )
 
     webauthn_assertion_response = webauthn.WebAuthnAssertionResponse(
-        webauthn_user,
-        assertion_response,
-        challenge,
-        ORIGIN,
-        uv_required=False)  # User Verification
+        webauthn_user, assertion_response, challenge, ORIGIN, uv_required=False
+    )  # User Verification
 
     sign_count = webauthn_assertion_response.verify()
 
@@ -179,13 +214,10 @@ def verify_assertion():
     db.session.add(user)
     db.session.commit()
 
-    return jsonify({
-        'success':
-            'Successfully logged in as {}'.format(user.username)
-    })
+    return jsonify({"success": "Successfully logged in as {}".format(user.username)})
 
 
-@student.route('/verify_assertion_for_attendance', methods=['POST'])
+@student.route("/verify_assertion_for_attendance", methods=["POST"])
 def verify_assertion_attendance():
     latitude = request.form.get("latitude")
     longitude = request.form.get("longitude")
@@ -194,25 +226,29 @@ def verify_assertion_attendance():
     course_code = request.form.get("course_code")
     period = request.form.get("period")
 
-    challenge = request.cookies.get('challenge')
+    challenge = request.cookies.get("challenge")
 
     assertion_response = request.form
-    credential_id = assertion_response.get('id')
+    credential_id = assertion_response.get("id")
 
     user = User.query.filter_by(credential_id=credential_id).first()
     if not user:
-        return make_response(jsonify({'fail': 'User does not exist.'}), 401)
+        return make_response(jsonify({"fail": "User does not exist."}), 401)
 
     webauthn_user = webauthn.WebAuthnUser(
-        user.ukey, user.username, user.display_name, user.icon_url,
-        user.credential_id, user.pub_key, user.sign_count, user.rp_id)
+        user.ukey,
+        user.username,
+        user.display_name,
+        user.icon_url,
+        user.credential_id,
+        user.pub_key,
+        user.sign_count,
+        user.rp_id,
+    )
 
     webauthn_assertion_response = webauthn.WebAuthnAssertionResponse(
-        webauthn_user,
-        assertion_response,
-        challenge,
-        ORIGIN,
-        uv_required=False)  # User Verification
+        webauthn_user, assertion_response, challenge, ORIGIN, uv_required=False
+    )  # User Verification
 
     sign_count = webauthn_assertion_response.verify()
 
@@ -222,12 +258,16 @@ def verify_assertion_attendance():
     db.session.commit()
     attendance = Attendance.query.filter_by(roll_no=rollno, staff_id=staff_id).first()
     if attendance:
-        return make_response(jsonify({'fail': 'Attendance has already been registered'}), 401)
+        return make_response(
+            jsonify({"fail": "Attendance has already been registered"}), 401
+        )
 
     # check if the attendance is given at the correct lat, long
     loc = Course.query.filter_by(latitude=latitude, longitude=longitude).first()
     if loc:
-        return make_response(jsonify({'fail': 'Location Incorrect, Please be at correct location'}), 401)
+        return make_response(
+            jsonify({"fail": "Location Incorrect, Please be at correct location"}), 401
+        )
 
     location = Location(latitude=latitude, longitude=longitude)
     attendance = Attendance(
@@ -237,17 +277,16 @@ def verify_assertion_attendance():
         logged_time=datetime.datetime.now(),
         period=period,
         location=location,
-        course_code=course_code
+        course_code=course_code,
     )
     db.session.add(attendance)
     db.session.commit()
-    return jsonify({
-        'success':
-            'Successfully authenticated as {}'.format(user.username)
-    })
+    return jsonify(
+        {"success": "Successfully authenticated as {}".format(user.username)}
+    )
 
 
-@student.route('getDashboardDetails', methods=["POST"])
+@student.route("getDashboardDetails", methods=["POST"])
 def GetDashboardData():
     student_rollno = 1601014  # " #request.form.get('student_rollno')
     print(student_rollno)
@@ -258,8 +297,9 @@ def GetDashboardData():
     print(user_json)
     return jsonify(user_json)
 
+
 # API : feedback POST
-@student.route('postFeedback', methods=["POST"])
+@student.route("postFeedback", methods=["POST"])
 def get_feedback():
     data = request.json
     print(data)
@@ -271,15 +311,21 @@ def get_feedback():
 
     return make_response("Your Feedback has been received anonymously", 200)
 
+
 # API : GetAttendance history
-@student.route('get_attendance_history', methods=["POST"])
+@student.route("get_attendance_history", methods=["POST"])
 def get_attendance_history():
     data = request.json
-    attendance_history = db.session.query(Attendance).filter(Attendance.roll_no == data['rollno']).filter(Attendance.staff_id == data['staff_code'])\
-        .filter(Attendance.course_code == data['course_code']).all()
+    attendance_history = (
+        db.session.query(Attendance)
+        .filter(Attendance.roll_no == data["rollno"])
+        .filter(Attendance.staff_id == data["staff_code"])
+        .filter(Attendance.course_code == data["course_code"])
+        .all()
+    )
     if not attendance_history:
         print(db.error)
-        return jsonify({'fail': "Attendance history cannot be fetched"}, 401)
+        return jsonify({"fail": "Attendance history cannot be fetched"}, 401)
     attendance_history_ = AttendanceHistorySchema(many=True)
     post_json = attendance_history_.dump(attendance_history)
     print(post_json)
