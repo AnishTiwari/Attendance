@@ -78,8 +78,8 @@ export class StudentComponent implements OnInit {
          this.studentdashboard.courses.forEach((course, index)=>{
 
          
-          let exists = course.schedules.filter(x=>x.day == new Date().getDay() && x.start_time <=  new Date().getTime()
-           && x.end_time >=  new Date().getTime() );
+          let exists = course.schedules.filter(x=>x.day == new Date().getDay() && x.start_time.toString() <=  new Date().toTimeString()
+           && x.end_time.toString() >=  new Date().toTimeString() );
 
            if(exists.length >0){
            

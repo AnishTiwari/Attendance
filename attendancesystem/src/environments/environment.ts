@@ -4,7 +4,7 @@
 
 export const environment = {
   production: false,
-  server: "https://4440652f2138.ngrok.io/" // -> include trailing '/' 
+  server: "https://ee72cf34d52f.ngrok.io/" // -> include trailing '/' 
 };
 
 /*

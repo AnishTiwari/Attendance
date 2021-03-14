@@ -1,0 +1,39 @@
+<h1 mat-dialog-title>Attendance {{  Attendances.attendance.data[0].course_code }} - {{  Attendances.attendance.data[0].roll_no }} - {{  Attendances.attendance.data[0].staff_id }}</h1>
+<mat-dialog-content>
+
+    <div class="container-fluid">
+        <table class="table table-dark">
+            <thead>
+              <tr>
+                <th scope="col">#</th>
+                <th scope="col">Present</th>
+                <th scope="col">Fingerprint</th>
+                <th scope="col">Period</th>
+                <th scope="col">Latitude</th>
+                <th scope="col">Longitude</th>
+                <th scope="col">Logged Date</th>
+                <th scope="col">Logged Time</th>
+              </tr>
+            </thead>
+            <tbody *ngFor="let data of Attendances.attendance.data; index as i;">
+              <tr>
+                <th scope="row">{{ i+1 }}</th>
+                <td>{{ data.is_present }}</td>
+                <td>{{ data.is_fingerprint }}</td>
+                <td>{{ data.period }}</td>
+                <td>{{ data.location.latitude }}</td>
+                <td>{{ data.location.longitude }}</td>
+                <td>{{ data.logged_time.toDateString() }}</td>
+                <td>{{ data.logged_time.toLocaleTimeString() }}</td>
+              </tr>
+             
+            </tbody>
+          </table>
+        
+        
+        </div>
+</mat-dialog-content>
+
+<mat-dialog-actions>
+    <button class="mat-raised-button" mat-dialog-close>Close</button>
+</mat-dialog-actions>

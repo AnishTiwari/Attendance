@@ -2,8 +2,10 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { BaseService } from '../../app.service';
 import {Students} from './models/students';
+import {AttendanceComponent} from '../attendance/attendance.component';
 
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatDialog } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-students',
@@ -12,7 +14,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 })
 export class StudentsComponent implements OnInit {
 
-  constructor(private _activatedRoute:ActivatedRoute, private _baseservice:BaseService, private matsnackbar:MatSnackBar ) { }
+  constructor(private _activatedRoute:ActivatedRoute, private _baseservice:BaseService, private matsnackbar:MatSnackBar, private matdialog:MatDialog ) { }
 public courseCode:string;
 public Students:Students = new Students();
   ngOnInit(): void {
@@ -30,8 +32,23 @@ public Students:Students = new Students();
               });
             }
     )
+  }
 
 
+  viewStudentAttendance(rollno:string)  {
+    this._baseservice.getAll("course/getStudentAttendance/"+this.courseCode+"/"+rollno )
+    .subscribe(
+      (data)=>{
+        this.matdialog.open(AttendanceComponent,{width:'100%', data:{attendance:data}});
+        console.log(data);
+      }
+      ,
+      (error)=>{
+        this.matsnackbar.open(error.message, "error", {
+          duration: 4000,
+        });
+      }
+    )
   }
 
 }

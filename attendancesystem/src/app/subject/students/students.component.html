@@ -6,6 +6,7 @@
         <th scope="col">Username</th>
         <th scope="col">Rollno</th>
         <th scope="col">Email-Id</th>
+        <th scope="col"></th>
       </tr>
     </thead>
     <tbody *ngFor="let data of Students.data; index as i;">
@@ -14,6 +15,7 @@
         <td>{{ data.username }}</td>
         <td>{{ data.rollno }}</td>
         <td>{{ data.emailid }}</td>
+        <td><button (click)="viewStudentAttendance(data.rollno)">View</button></td>
       </tr>
      
     </tbody>

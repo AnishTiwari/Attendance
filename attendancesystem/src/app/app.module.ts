@@ -19,6 +19,8 @@ import { HomeComponent } from './subject/home/home.component';
 import { StudentsComponent } from './subject/students/students.component';
 import { FeedbacksComponent } from './subject/feedbacks/feedbacks.component';
 import { AnalyticsComponent } from './subject/analytics/analytics.component';
+import { AttendanceComponent } from './subject/attendance/attendance.component';
+import { MatDialogModule } from '@angular/material/dialog';
 
 @NgModule({
   declarations: [
@@ -32,7 +34,8 @@ import { AnalyticsComponent } from './subject/analytics/analytics.component';
     HomeComponent,
     StudentsComponent,
     FeedbacksComponent,
-    AnalyticsComponent
+    AnalyticsComponent,
+    AttendanceComponent
   ],
   imports: [
     BrowserModule,
@@ -41,6 +44,7 @@ import { AnalyticsComponent } from './subject/analytics/analytics.component';
     ReactiveFormsModule,
     MatSnackBarModule,
     BrowserAnimationsModule,
+    MatDialogModule
   ],
   providers: [{ provide: HTTP_INTERCEPTORS, useClass: CustomInterceptor, multi: true },],
   bootstrap: [AppComponent]
