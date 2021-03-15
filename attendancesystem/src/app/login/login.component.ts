@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, FormControl } from "@angular/forms";
-import {MatSnackBar} from '@angular/material/snack-bar';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { Router } from '@angular/router';
 
 import * as base64js from 'base64-js';
 import { BaseService } from '../app.service';
@@ -12,7 +13,7 @@ import { BaseService } from '../app.service';
 })
 export class LoginComponent implements OnInit {
 
-  constructor(private BaseService: BaseService, private matsnackbar: MatSnackBar) { }
+  constructor(private BaseService: BaseService, private matsnackbar: MatSnackBar, private _router: Router) { }
 
   loginform: FormGroup;
 
@@ -113,18 +114,18 @@ export class LoginComponent implements OnInit {
           publicKey: transformCredentialRequestOptions(data)
 
         })
-        .catch((e)=>{
-          
-          console.log(e);
-          this.matsnackbar.open(e, "error", {
-            duration: 3000,
-          });
-          
-          return Promise.reject('Location error');
+          .catch((e) => {
+
+            console.log(e);
+            this.matsnackbar.open(e, "error", {
+              duration: 3000,
+            });
+
+            return Promise.reject('Location error');
           })
           .then(
             (result) => {
-              
+
               var data = transformAssertionForServer(result);
 
               navigator.geolocation.getCurrentPosition((position) => {
@@ -135,28 +136,37 @@ export class LoginComponent implements OnInit {
                 //   this.latitude;
                 // data["longitude"] =
                 //   this.longitude;
-              
+
                 this.BaseService
                   .add<any[]>('verify_assertion_for_login', data)
                   .subscribe((data: any) => {
                     console.log(data);
                     console.log("USER LOGGED IN");
-                    () => { this.BaseService.setUsername(data.login_rollno); }
+                    if (data.is_staff)
+                      this._router.navigate(['staff/' + data.login_rollno], { state: { 'user_id': data.student_id } });
+                    else
+                      this._router.navigate(['student'], { state: { 'user_id': data.staff_id } });
+
+                    () => { this.BaseService.setUsername(data.student_id ?? data.staff_id); }
 
                   },
-                  error => () => {
-                    console.log("error");
-                  },
-                  () => {
-                    console.log("completed");
-                  });
+                    error => () => {
+                      this.matsnackbar.open(error.message, "error", {
+                        duration: 3000,
+                      });
+                    },
+                    () => {
+                      console.log("completed");
+                    });
               })
             },
 
           )
-       },
+      },
         error => {
-          console.log("error");
+          this.matsnackbar.open(error.message, "error", {
+            duration: 3000,
+          });
         },
         () => {
           console.log("completed");

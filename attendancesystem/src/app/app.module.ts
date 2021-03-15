@@ -21,6 +21,7 @@ import { FeedbacksComponent } from './subject/feedbacks/feedbacks.component';
 import { AnalyticsComponent } from './subject/analytics/analytics.component';
 import { AttendanceComponent } from './subject/attendance/attendance.component';
 import { MatDialogModule } from '@angular/material/dialog';
+import { TimetableComponent } from './professor/timetable/timetable.component';
 
 @NgModule({
   declarations: [
@@ -35,7 +36,8 @@ import { MatDialogModule } from '@angular/material/dialog';
     StudentsComponent,
     FeedbacksComponent,
     AnalyticsComponent,
-    AttendanceComponent
+    AttendanceComponent,
+    TimetableComponent
   ],
   imports: [
     BrowserModule,

@@ -4,8 +4,10 @@ import { BaseService } from '../app.service';
 import {Router, ActivatedRoute, Params} from '@angular/router';
 
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatDialog } from '@angular/material/dialog';
 
-import { StaffDashboard } from './models/dashboard';
+import {TimetableComponent} from './timetable/timetable.component';
+import { StaffDashboard, CourseSchedule } from './models/dashboard';
 
 @Component({
   selector: 'app-professor',
@@ -15,9 +17,9 @@ import { StaffDashboard } from './models/dashboard';
 export class ProfessorComponent implements OnInit {
 
 
-  constructor(private BaseService: BaseService, private matsnackbar: MatSnackBar, private activatedRoute: ActivatedRoute, private _router:Router) { }
+  constructor(private BaseService: BaseService, private matsnackbar: MatSnackBar, private activatedRoute: ActivatedRoute, private _router:Router, private matdialog:MatDialog) { }
 public id:string;
-
+public CourseSchedule:CourseSchedule = new CourseSchedule();
 public staffdashboard: StaffDashboard = new StaffDashboard();  
 ngOnInit(): void {
 
@@ -37,6 +39,7 @@ ngOnInit(): void {
           this.matsnackbar.open(error.message, "error", {
             duration: 3000,
           });
+          this._router.navigateByUrl('login');
 
         };
 
@@ -65,10 +68,31 @@ public getRandomColor() {
 }
 
 
-public navigateToCourse(course_id){
+public navigateToCourse(course_id:string){
   let course_name = this.staffdashboard.data[0].courses[course_id].course_code;
 
   this._router.navigateByUrl('course/'+course_name);
+}
+
+public viewProfTimeTable(){
+  this.BaseService.getAll("staff/getTimeTable/"+this.id)
+    .subscribe( (data) =>{
+    console.log(data);
+    Object.assign(this.CourseSchedule, data);
+      this.matdialog.open(TimetableComponent, {data:this.CourseSchedule});
+    return this.staffdashboard;
+
+  }
+
+
+  ) , 
+  (error) => {
+      this.matsnackbar.open(error.message, "error", {
+        duration: 3000,
+      });
+      this._router.navigateByUrl('login');
+
+    };
 }
 
 }

@@ -9,6 +9,7 @@ import { StudentDashboard, History } from './models/studentdashboard';
 
 import { pipe } from 'rxjs';
 import * as base64js from 'base64-js';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-student',
@@ -17,14 +18,15 @@ import * as base64js from 'base64-js';
 })
 export class StudentComponent implements OnInit {
   feedbackform: FormGroup;
-  crctTime:boolean[] = [];
-  constructor(private BaseService: BaseService, private matsnackbar: MatSnackBar) {
+  private student_rollno: number;
 
+  crctTime: boolean[] = [];
+  constructor(private BaseService: BaseService, private matsnackbar: MatSnackBar, private _router: Router, private activatedRoute: ActivatedRoute) {
+    this.student_rollno = this._router.getCurrentNavigation().extras.state?.user_id;
 
   }
   public history: History = new History();
   public studentdashboard: StudentDashboard = new StudentDashboard();
-  private student_rollno: number;
   private background_color_list: string[] = ["linear-gradient(118deg, #911289, #25b9a4)",
     "linear-gradient(258deg, #5c554d, #8db871)",
     "linear-gradient(115deg, #c070bd, #825b22)",
@@ -61,7 +63,8 @@ export class StudentComponent implements OnInit {
 
     });
 
-    this.student_rollno = 1601016; //this.BaseService.getUsername();
+
+    // = this.BaseService.getUsername();
 
     this.formdata = {
       "student_rollno": this.student_rollno
@@ -71,28 +74,24 @@ export class StudentComponent implements OnInit {
       .add<StudentDashboard>('getDashboardDetails', this.formdata)
       .subscribe((data: StudentDashboard) => {
 
-        console.log(data)
+        console.log(data);
         Object.assign(this.studentdashboard, data);
 
-        this.studentdashboard.courses.forEach((course, inx)=>{this.crctTime.push(true) ;});
-         this.studentdashboard.courses.forEach((course, index)=>{
+        this.studentdashboard.courses.forEach((course, inx) => { this.crctTime.push(true); });
+        this.studentdashboard.courses.forEach((course, index) => {
 
-         
-          let exists = course.schedules.filter(x=>x.day == new Date().getDay() && x.start_time.toString() <=  new Date().toTimeString()
-           && x.end_time.toString() >=  new Date().toTimeString() );
 
-           if(exists.length >0){
-           
-              this.crctTime[index] = false;
-           
-            
-             console.log(this.crctTime);
-             console.log(exists.length);
-           }
-           console.log(new Date().getDay());
+          let exists = course.schedules.filter(x => x.day == new Date().getDay() && x.start_time.toString() <= new Date().toTimeString()
+            && x.end_time.toString() >= new Date().toTimeString());
+
+          if (exists.length > 0) {
+
+            this.crctTime[index] = false;
+
+          }
         })
 
-       
+
 
         console.log(this.studentdashboard);
         return this.studentdashboard;
@@ -101,7 +100,7 @@ export class StudentComponent implements OnInit {
           this.matsnackbar.open(error.message, "error", {
             duration: 3000,
           });
-
+          this._router.navigateByUrl('login');
         }
       );
   }
@@ -140,10 +139,10 @@ export class StudentComponent implements OnInit {
   public submitfeedbackform(form: FormGroup): void {
     console.log(this.periodSub);
     this.feedbackform.setControl('course_code', new FormControl(this.periodSub));
-
+    //
     //TODO : Have a function to which does the below functionality & remove if - else chain
     //set the rating value here
-
+    //
     if (form.value['onestar'] == '')
       this.feedbackform.removeControl('onestar');
     else {
@@ -190,10 +189,12 @@ export class StudentComponent implements OnInit {
           });
           return Promise.reject('Location error');
         },
-        ()=>{ this.matsnackbar.open("Feedback sent", "success", {
-          duration: 3000,
-        });}
-        
+        () => {
+          this.matsnackbar.open("Feedback sent", "success", {
+            duration: 3000,
+          });
+        }
+
 
       )
   }

@@ -11,13 +11,13 @@ import { map, tap } from 'rxjs/operators';
 export class BaseService {
     private formdata: any;
     private actionUrl: string;
-    private username: BigInteger;
+    private username: number;
 
-    public setUsername(rollno: BigInteger) {
+    public setUsername(rollno: number) {
         this.username = rollno;
     }
 
-    public getUsername(): BigInteger {
+    public getUsername(): number {
         return this.username;
     }
 
