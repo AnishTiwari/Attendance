@@ -51,9 +51,10 @@ export class CustomInterceptor implements HttpInterceptor {
                     // The response body may contain clues as to what went wrong,
                     console.error(`Backend returned code ${error.status}, body was: ${JSON.stringify(error.error["fail"])}`);
 
-                    this.matsnackbar.open(JSON.stringify(error.error["fail"]), "error", {
+                    this.matsnackbar.open("Unauthorized", "error", {
                         duration: 2000,
                     });
+                    
                     this._router.navigateByUrl('login');
 
 

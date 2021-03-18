@@ -7,7 +7,6 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 
 import { StudentDashboard, History } from './models/studentdashboard';
 
-import { pipe } from 'rxjs';
 import * as base64js from 'base64-js';
 import { ActivatedRoute, Router } from '@angular/router';
 

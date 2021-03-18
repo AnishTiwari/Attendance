@@ -15,9 +15,23 @@
       <div class="container-fluid">
         <div class="col-xl-4 col-lg-5 col-sm-5 mx-auto col-md-1">
           <h3 class="h2 text-white text-center">Log In</h3>
+          <nav class="navbar navbar-expand-sm navbar-dark">
+
+
+          <ul class="navbar-nav mx-auto">
+            <li [routerLinkActive]="['active']" class="nav-item "> <a class="nav-link" (click)="IsFingerPrint=true">
+             Fingerprint
+            </a></li>
+            <li [routerLinkActive]="['active']" class="nav-item"><a class="nav-link" (click)="IsFingerPrint=false" >
+             Password
+           </a></li>
+           
+          </ul>
+        </nav>
+        <ng-container  *ngIf="IsFingerPrint">
           <div class="text-center">
             <label class="text-white"
-              >Use fingerprint sensor to give your attendance</label
+              >Use fingerprint sensor </label
             >
           </div>
           <form
@@ -69,7 +83,76 @@
               </div>
             </div>
           </form>
+        </ng-container>
+          <ng-container *ngIf="IsFingerPrint == false">
+          <div class="text-center"  >
+            <label class="text-white"
+              >Use your username & password</label>
+          </div>
+          <form 
+            [formGroup]="loginformpassword"
+            class="justify-content-center align-items-center"
+            (ngSubmit)="submitformpassword(loginformpassword)"
+          >
+            <div class="form-group row mt-5">
+              <div class="col" id="inputrollno">
+                <label for="inputrollno" class="text-white">Your Rollno</label>
+
+                <input
+                  type="text"
+                  formControlName="inputrollno"
+                  spellcheck="false"
+                  class="form-control border text-white form-control-sm"
+                  style="
+                    border-radius: 6px;
+                    border-width: 1.9px !important;
+                    color: #e9b000 !important;
+                    background-color: black !important;
+                  "
+                  aria-describedby="inputrollnohelp"
+                  id="inputrollno"
+                />
+                <br />
+                <label for="inputrollno" class="text-white">Your Password</label>
+
+                <input
+                  type="password"
+                  formControlName="inputpassword"
+                  spellcheck="false"
+                  class="form-control border text-white form-control-sm"
+                  style="
+                    border-radius: 6px;
+                    border-width: 1.9px !important;
+                    color: #e9b000 !important;
+                    background-color: black !important;
+                  "
+                  aria-describedby="inputrollnohelp"
+                  id="inputpassword"
+                />
+                <br />
+                <div class="row justify-content-center mt-5">
+                  <div class="align-items-center col-4">
+                    <button
+                      type="submit"
+                      class="mat-raised-button"
+                      style="
+                        cursor: pointer;
+                        border: 0px !important;
+                        color: #e9b000 !important;
+                        /* background-color: black !important; */
+                      "
+                      id="submit"
+                    >
+                     Login
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </form>
+        </ng-container>
         </div>
+
       </div>
     </div>
   </body>

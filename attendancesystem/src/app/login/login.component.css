@@ -1,4 +1,9 @@
-#inputrollno{
+#inputrollno, #inputpassword{
     font-size: 17px;
     font-family: monospace;
+}
+
+
+a{
+    cursor: pointer;
 }

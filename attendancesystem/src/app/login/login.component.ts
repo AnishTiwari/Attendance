@@ -4,6 +4,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 
 import * as base64js from 'base64-js';
+import { error } from 'selenium-webdriver';
 import { BaseService } from '../app.service';
 
 @Component({
@@ -16,17 +17,49 @@ export class LoginComponent implements OnInit {
   constructor(private BaseService: BaseService, private matsnackbar: MatSnackBar, private _router: Router) { }
 
   loginform: FormGroup;
+  loginformpassword: FormGroup;
 
   ngOnInit(): void {
+
+    this.loginformpassword = new FormGroup({
+      inputrollno: new FormControl(''),
+      inputpassword: new FormControl('')
+
+    });
 
     this.loginform = new FormGroup({
       inputrollno: new FormControl('')
     });
-
   }
+  public IsFingerPrint:boolean = true;
 
   submitform(form: FormGroup) {
     this.Login(form);
+  }
+
+  submitformpassword(form: FormGroup){
+    console.log(form);
+    let formdata = {
+      "rollno": form.value.inputrollno,
+      "password": form.value.inputpassword,
+    };
+
+    this.BaseService
+      .add<any[]>('loginpassword', formdata)
+      .subscribe((data: any) => {
+        if (data.is_staff)
+        this._router.navigate(['staff/' + data.login_rollno], { state: { 'user_id': data.student_id } });
+      else
+        this._router.navigate(['student'], { state: { 'user_id': data.staff_id } });
+
+      },
+      error =>{
+        console.log(error);
+        this.matsnackbar.open("Login Error", "error", {
+          duration: 3000,
+        });
+
+      });
   }
 
   private b64enc(buf: any) {
@@ -54,7 +87,6 @@ export class LoginComponent implements OnInit {
   public longitude: any;
 
   private Setlocation(lat: any, long: any) {
-    console.log(lat, long);
     this.latitude = lat;
     this.longitude = long;
   }
@@ -102,7 +134,7 @@ export class LoginComponent implements OnInit {
       };
     };
 
-    var formdata = {
+    let formdata = {
       "rollno": submitdata.value.inputrollno
     };
 
@@ -116,7 +148,6 @@ export class LoginComponent implements OnInit {
         })
           .catch((e) => {
 
-            console.log(e);
             this.matsnackbar.open(e, "error", {
               duration: 3000,
             });
@@ -154,10 +185,8 @@ export class LoginComponent implements OnInit {
                       this.matsnackbar.open(error.message, "error", {
                         duration: 3000,
                       });
-                    },
-                    () => {
-                      console.log("completed");
-                    });
+                    }
+                   );
               })
             },
 
@@ -167,10 +196,8 @@ export class LoginComponent implements OnInit {
           this.matsnackbar.open(error.message, "error", {
             duration: 3000,
           });
-        },
-        () => {
-          console.log("completed");
-        });
+        }
+       );
 
   }
 }
