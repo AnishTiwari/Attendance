@@ -12,8 +12,9 @@ import{ FeedbacksComponent } from './subject/feedbacks/feedbacks.component';
 import{ AnalyticsComponent } from './subject/analytics/analytics.component';
 
 const routes: Routes = [
-{path:'', component:RegisterComponent},
-{path :'login', component:LoginComponent},
+{path:'', component:LoginComponent},
+{path:'login', component:LoginComponent},
+{path :'register', component:RegisterComponent},
 {path :'student', component:StudentComponent},
 {path :'staff/:id', component:ProfessorComponent},
 {path :'course/:id', component:SubjectComponent,
@@ -26,6 +27,7 @@ const routes: Routes = [
 
   ]
 },
+{path:"**", redirectTo: ''},
 ];
 
 @NgModule({

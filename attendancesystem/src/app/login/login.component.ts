@@ -142,6 +142,7 @@ export class LoginComponent implements OnInit {
       .add<any[]>('login', formdata)
       .subscribe((data: any) => {
 
+        console.log(data);
         navigator.credentials.get({
           publicKey: transformCredentialRequestOptions(data)
 

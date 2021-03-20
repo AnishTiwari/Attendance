@@ -118,6 +118,14 @@ class CourseFeedbackSchema(Schema):
     comment = fields.Str()
 
 
+class StaffScheduleSchema(Schema):
+    day = fields.Integer()
+    period = fields.Integer()
+    start_time = fields.Str()
+    end_time = fields.Str()
+    course_code = fields.Str()
+
+
 class TimeCourseSchema(Schema):
     start_time = fields.Time()
     end_time = fields.Time()

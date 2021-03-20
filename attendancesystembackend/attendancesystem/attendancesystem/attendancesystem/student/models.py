@@ -46,15 +46,17 @@ class User(db.Model):
     __tablename__ = "user"
     id = db.Column(db.Integer, primary_key=True)
     ukey = db.Column(db.String(240))
-    display_name = db.Column(db.String(40))
-    pub_key = db.Column(db.String(240))
+    display_name = db.Column(db.String(100))
+    pub_key = db.Column(db.String(540))
     sign_count = db.Column(db.Integer)
-    username = db.Column(db.String(40))
-    emailid = db.Column(db.String(40))
+    username = db.Column(db.String(50))
+    emailid = db.Column(db.String(50))
     rollno = db.Column(db.Integer)
-    rp_id = db.Column(db.String(240))
-    icon_url = db.Column(db.String(240))
-    credential_id = db.Column(db.String(240))
+    rp_id = db.Column(db.String(540))
+    icon_url = db.Column(db.String(540))
+    credential_id = db.Column(db.String(540))
+    is_staff = db.Column(db.Boolean)
+    password = db.Column(db.String(50))
 
 
 class Location(db.Model):

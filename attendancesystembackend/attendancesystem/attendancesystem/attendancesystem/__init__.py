@@ -1,14 +1,20 @@
 from flask_sqlalchemy import SQLAlchemy
-from flask import Flask
+from flask import Flask, session
 import os
+
 from . import config
 from flask_migrate import Migrate
+from flask_session import Session
 
 
 app = Flask(__name__)
 # config.py configuration
 app.config.from_object(config.Config)
-app.config["SQLALCHEMY_ECHO"] = True
+
+# Flask Session
+
+sess = Session()
+sess.init_app(app)
 
 db = SQLAlchemy()
 db.init_app(app)
@@ -42,7 +48,7 @@ db.init_app(app)
 @app.after_request
 def after_request(response):
     header = response.headers
-    header["Access-Control-Allow-Origin"] = "https://100b82e41b32.ngrok.io"
+    header["Access-Control-Allow-Origin"] = "https://1fb5f6d57979.ngrok.io"
     header["Access-Control-Allow-Credentials"] = "true"
     header[
         "Access-Control-Allow-Headers"

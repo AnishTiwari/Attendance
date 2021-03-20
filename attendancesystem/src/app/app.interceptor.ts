@@ -55,7 +55,7 @@ export class CustomInterceptor implements HttpInterceptor {
                         duration: 2000,
                     });
                     
-                    this._router.navigateByUrl('login');
+                     this._router.navigateByUrl('login');
 
 
                 }

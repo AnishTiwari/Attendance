@@ -2,11 +2,33 @@ import random
 import six
 import os
 import base64
+from functools import wraps
+from flask import session
+
+from werkzeug.exceptions import abort
 
 CHALLENGE_DEFAULT_BYTE_LEN = 32
 UKEY_DEFAULT_BYTE_LEN = 20
 USERNAME_MAX_LENGTH = 32
 DISPLAY_NAME_MAX_LENGTH = 65
+
+
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if 'user_is_authenticated' not in session or not session['user_is_authenticated']:
+            abort(401)
+        return f(*args, **kwargs)
+    return decorated_function
+
+
+def staff_login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if 'user_is_authenticated' not in session or 'is_staff' not in session or not session['is_staff']:
+            abort(401)
+        return f(*args, **kwargs)
+    return decorated_function
 
 
 def validate_username(username):

@@ -3,12 +3,14 @@ from sqlalchemy.orm import load_only
 
 from ..student.models import *
 from ..student.types import *
+from ..student import util
 
 course = Blueprint("course", __name__)
 
 
 # API: course-profile dashboard page
 @course.route("getCourseSchedule/<variable>", methods=["GET"])
+@util.login_required
 def get_course_schedule(variable):
     fields = ["latitude", "longitude"]
     loc = (
@@ -35,6 +37,7 @@ def get_course_schedule(variable):
 
 
 @course.route("updateLocation", methods=["POST"])
+@util.login_required
 def update_course_location():
     data = request.json
     print(data)
@@ -52,6 +55,7 @@ def update_course_location():
 
 
 @course.route("getstudents/<course_code>", methods=["GET"])
+@util.login_required
 def get_course_students(course_code):
     fields = ["username", "rollno"]
     data = (
@@ -67,6 +71,7 @@ def get_course_students(course_code):
 
 
 @course.route("getCourseFeedbacks/<course_code>", methods=["GET"])
+@util.login_required
 def get_course_feedbacks(course_code):
     fields = ["rating", "comment"]
     data = (
@@ -75,16 +80,18 @@ def get_course_feedbacks(course_code):
             .options(load_only(*fields))
             .all()
     )
-    print(data)
     json = CourseFeedbackSchema(many=True)
     val = json.dump(data)
     return jsonify({"data": val})
 
 
 @course.route("<course_code>/getTimeForCourse/<day_period>", methods=["GET"])
+@util.login_required
 def get_time_for_course(course_code, day_period):
-    day, period = list(day_period)
-
+    try:
+        day, period = list(day_period)
+    except:
+        day, period = 0, day_period
     loc = (
         db.session.query(Schedule)
             .join(Course, Schedule.courses)
@@ -92,15 +99,14 @@ def get_time_for_course(course_code, day_period):
             .filter(Schedule.day == day, Schedule.period == period)
             .first()
     )
-    print(loc.start_time)
     json = TimeCourseSchema()
     val = json.dump(loc)
-    print(val)
 
     return jsonify({"data": val})
 
 
 @course.route("updateTime", methods=["POST"])
+@util.login_required
 def update_course_time():
     print(request.json)
     data = request.json
@@ -123,15 +129,13 @@ def update_course_time():
 
 
 @course.route("getStudentAttendance/<course_code>/<roll_no>", methods=["GET"])
+@util.login_required
 def get_student_attendance(course_code, roll_no):
-    print(course_code,roll_no)
     attendance = (db.session.query(Attendance)
                   .filter(Attendance.course_code == course_code)
                   .filter(Attendance.roll_no == roll_no)
                   .all())
-    print(attendance)
     json = AttendanceSchema(many=True)
     val = json.dump(attendance)
-    print(val)
 
     return jsonify({"data": val})

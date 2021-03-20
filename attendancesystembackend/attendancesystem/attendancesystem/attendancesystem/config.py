@@ -9,5 +9,8 @@ class Config(object):
     SQLALCHEMY_DATABASE_URI = "mysql://root:@localhost/attendancesystem"
     SQLALCHEMY_ECHO = True
     SQLALCHEMY_TRACK_MODIFICATIONS = False
-
+    SESSION_COOKIE_SAMESITE = "None"
+    SESSION_COOKIE_SECURE = True
+    SESSION_PERMANENT = False
+    SESSION_TYPE = 'filesystem'
     # --------------------------------------------

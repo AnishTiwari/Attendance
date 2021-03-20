@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  server: "https://votum.serveo.net/"
+  server: "https://srecportal.srec.ac.in:8889/"
 };

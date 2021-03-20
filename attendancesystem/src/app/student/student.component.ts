@@ -9,6 +9,7 @@ import { StudentDashboard, History } from './models/studentdashboard';
 
 import * as base64js from 'base64-js';
 import { ActivatedRoute, Router } from '@angular/router';
+import { error } from '@angular/compiler/src/util';
 
 @Component({
   selector: 'app-student',
@@ -112,6 +113,20 @@ export class StudentComponent implements OnInit {
 
   }
 
+  public logout():void{
+    this.BaseService
+    .add<any[]>('logout',{}).subscribe((data:any)=>{
+      this._router.navigateByUrl('login');
+    },
+    (error)=>{
+      this.matsnackbar.open("Error", "error", {
+        duration: 3000,
+      });
+
+    });
+     this._router.navigateByUrl('login');
+
+  }
   //API 
   public getAttendanceHistory(id: number) {
 
@@ -130,6 +145,8 @@ export class StudentComponent implements OnInit {
           this.matsnackbar.open(error.message, "error", {
             duration: 3000,
           });
+          this._router.navigateByUrl('login');
+
         }
       );
   }
