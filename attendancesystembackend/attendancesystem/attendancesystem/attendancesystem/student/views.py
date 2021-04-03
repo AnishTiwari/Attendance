@@ -10,7 +10,7 @@ from . import util
 from .models import User, db, Location, Attendance, Feedback, Course
 from .types import *
 
-ADDR: str = "1fb5f6d57979.ngrok.io"
+ADDR: str = "fedb97decd93.ngrok.io"
 
 student = Blueprint("student", __name__)
 
@@ -25,12 +25,15 @@ def register_student():
     username = request.form.get("register_username")
     emailid = request.form.get("register_emailid")
     rollno = request.form.get("register_rollno")
+    from_login = request.form.get("login")
+
     display_name = username
     if not util.validate_username(username):
         return make_response(jsonify({"fail": "Invalid username."}), 401)
 
-    if User.query.filter_by(username=username).first():
-        return make_response(jsonify({"fail": "User already exists."}), 401)
+    if not from_login and User.query.filter_by(username=username).first().credential_id is not None:
+        if User.query.filter_by(username=username).first():
+            return make_response(jsonify({"fail": "User already exists."}), 401)
 
     challenge = util.generate_challenge(32)
     ukey = util.generate_ukey()
@@ -45,6 +48,7 @@ def register_student():
     session["register_rollno"] = rollno
     session["register_display_name"] = display_name
     session["register_emailid"] = emailid
+    session["from_login"] = from_login
     response = make_response(jsonify(make_credential_options.registration_dict), 200)
 
     return response
@@ -56,22 +60,27 @@ def login_password():
     password = request.form.get("password")
 
     user = User.query.filter(and_(User.rollno == rollno, User.password == password)).first()
-    print(user)
+    print(user.credential_id is None)
     if not user:
         return make_response(jsonify({"fail": "User does not exist."}), 401)
     else:
         # Add to session
+        required_fingerprint = False
+        if user.credential_id is None:
+            required_fingerprint = True
         session['user_is_authenticated'] = True
         session['user_rollno'] = rollno
 
         if user.is_staff:
             session['is_staff'] = True
-            return jsonify({"success": "Successfully logged in as {}".format(user.username), "staff": True,
-                            "student_id": user.rollno})
+            return jsonify({"success": "Successfully logged in as {}".format(user.username), "is_staff": True,
+                            "student_id": user.rollno, "required": required_fingerprint, "username": user.username,
+                            "emailid": user.emailid})
         else:
             session['is_staff'] = False
-            return jsonify({"success": "Successfully logged in as {}".format(user.username), "staff": False,
-                            "staff_id": user.rollno})
+            return jsonify({"success": "Successfully logged in as {}".format(user.username), "is_staff": False,
+                            "staff_id": user.rollno, "required": required_fingerprint, "username": user.username,
+                            "emailid": user.emailid})
 
 
 @student.route("/login", methods=["POST"])
@@ -111,6 +120,7 @@ def webauthn_begin_assertion():
 def verify_credential_info():
     challenge = session.get("challenge")
     username = session.get("register_username")
+    from_login = session.get("from_login")
     display_name = username
     ukey = session.get("register_ukey")
     emailid = session.get("register_emailid")
@@ -122,7 +132,8 @@ def verify_credential_info():
     trust_anchor_dir = os.path.join(
         os.path.dirname(os.path.abspath(__file__)), TRUST_ANCHOR_DIR
     )
-    print(trust_anchor_dir)
+    print(challenge)
+    print(from_login)
     trusted_attestation_cert_required = True
     self_attestation_permitted = True
     none_attestation_permitted = True
@@ -150,9 +161,12 @@ def verify_credential_info():
     if credential_id_exists:
         return make_response(jsonify({"fail": "Credential ID already exists."}), 401)
 
-    existing_user = User.query.filter_by(
-        username=username, rollno=rollno, emailid=emailid
-    ).first()
+    existing_user = None
+    if not from_login:
+        existing_user = User.query.filter_by(
+            username=username, rollno=rollno, emailid=emailid
+        ).first()
+
     if not existing_user:
         if os.sys.version_info >= (3, 0):
             webauthn_credential.credential_id = str(
@@ -182,7 +196,27 @@ def verify_credential_info():
 
         db.session.commit()
     else:
-        return make_response(jsonify({"fail": "User already exists."}), 401)
+        if from_login:
+            if os.sys.version_info >= (3, 0):
+                webauthn_credential.credential_id = str(
+                    webauthn_credential.credential_id, "utf-8"
+                )
+                webauthn_credential.public_key = str(
+                    webauthn_credential.public_key, "utf-8"
+                )
+            user = User.query.filter_by(rollno=rollno).first()
+
+            user.ukey = ukey
+            user.display_name = display_name
+            user.pub_key = webauthn_credential.public_key
+            user.credential_id = webauthn_credential.credential_id
+            user.sign_count = webauthn_credential.sign_count
+            user.rp_id = RP_ID
+            user.icon_url = "https://img.icons8.com/material-sharp/24/000000/cloud-network.png"
+
+            db.session.commit()
+        else:
+            return make_response(jsonify({"fail": "User already exists."}), 401)
 
     print("Successfully registered as {}.".format(username))
 
@@ -228,12 +262,15 @@ def verify_assertion():
     session['user_rollno'] = user.rollno
     if user.is_staff:
         session['is_staff'] = True
+        print("IM STAFF")
         return jsonify(
-            {"success": "Successfully logged in as {}".format(user.username), "staff": True, "student_id": user.rollno})
+            {"success": "Successfully logged in as {}".format(user.username), "is_staff": True,
+             "student_id": user.rollno})
     else:
         session['is_staff'] = False
         return jsonify(
-            {"success": "Successfully logged in as {}".format(user.username), "staff": False, "staff_id": user.rollno})
+            {"success": "Successfully logged in as {}".format(user.username), "is_staff": False,
+             "staff_id": user.rollno})
 
 
 @student.route("/verify_assertion_for_attendance", methods=["POST"])
@@ -308,12 +345,12 @@ def verify_assertion_attendance():
 @student.route("getDashboardDetails", methods=["POST"])
 def GetDashboardData():
     student_rollno = request.form.get('student_rollno')
-    student_rollno='1601013'
+    # student_rollno='1601013'
     print(student_rollno)
     print("--------------------------------")
 
-    # if student_rollno == "undefined":
-    #     student_rollno = session['user_rollno']
+    if student_rollno == "undefined":
+        student_rollno = session['user_rollno']
     fetch_user = db.session.query(User).filter(User.rollno == student_rollno).first()
     user = DashboardSchema()
     user_json = user.dump(fetch_user)
@@ -363,5 +400,4 @@ def get_attendance_history():
         return jsonify({"fail": "Attendance history cannot be fetched"}, 401)
     attendance_history_ = AttendanceHistorySchema(many=True)
     post_json = attendance_history_.dump(attendance_history)
-    print(post_json)
     return jsonify({"history": post_json})
