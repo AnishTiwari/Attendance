@@ -6,11 +6,13 @@ from flask import Blueprint
 from flask import request, make_response, jsonify, session
 from webauthn import webauthn
 
+from ..config import Config
+
 from . import util
 from .models import User, db, Location, Attendance, Feedback, Course
 from .types import *
 
-ADDR: str = "fedb97decd93.ngrok.io"
+ADDR: str = Config.FRONTEND_URL
 
 student = Blueprint("student", __name__)
 
@@ -37,7 +39,6 @@ def register_student():
 
     challenge = util.generate_challenge(32)
     ukey = util.generate_ukey()
-
     make_credential_options = webauthn.WebAuthnMakeCredentialOptions(
         challenge, RP_NAME, RP_ID, ukey, username, display_name, ORIGIN
     )
@@ -68,8 +69,8 @@ def login_password():
         required_fingerprint = False
         if user.credential_id is None:
             required_fingerprint = True
-        session['user_is_authenticated'] = True
-        session['user_rollno'] = rollno
+            session['user_is_authenticated'] = True
+            session['user_rollno'] = rollno
 
         if user.is_staff:
             session['is_staff'] = True
@@ -85,7 +86,10 @@ def login_password():
 
 @student.route("/login", methods=["POST"])
 def webauthn_begin_assertion():
+    
     rollno = request.form.get("rollno")
+    if not rollno:
+        rollno = session.get('user_rollno')
     user = User.query.filter_by(rollno=rollno).first()
 
     if not user:
@@ -110,8 +114,8 @@ def webauthn_begin_assertion():
         webauthn_user, challenge
     )
     session["challenge"] = challenge.rstrip("=")
+    session["user_rollno"] = rollno
     print(session.get('challenge'))
-    print("hhhhhhhhhhhhhhhhhhhhhhhhh")
     response = make_response(jsonify(webauthn_assertion_options.assertion_dict), 200)
     return response
 
@@ -153,7 +157,7 @@ def verify_credential_info():
     try:
         webauthn_credential = webauthn_registration_response.verify()
     except Exception as e:
-        return jsonify({"fail": "Registration failed. Error: {}".format(e)})
+        return make_response(jsonify({"fail": "Registration failed. Error: {}".format(e)}), 401)
 
     credential_id_exists = User.query.filter_by(
         credential_id=webauthn_credential.credential_id
@@ -161,12 +165,14 @@ def verify_credential_info():
     if credential_id_exists:
         return make_response(jsonify({"fail": "Credential ID already exists."}), 401)
 
-    existing_user = None
+    existing_user = True
     if not from_login:
         existing_user = User.query.filter_by(
             username=username, rollno=rollno, emailid=emailid
         ).first()
+        print(existing_user)
 
+    print(existing_user)
     if not existing_user:
         if os.sys.version_info >= (3, 0):
             webauthn_credential.credential_id = str(
@@ -175,7 +181,7 @@ def verify_credential_info():
             webauthn_credential.public_key = str(
                 webauthn_credential.public_key, "utf-8"
             )
-        location = Location(latitude=latitude, longitude=longitude)
+            location = Location(latitude=latitude, longitude=longitude)
 
         user = User(
             ukey=ukey,
@@ -204,7 +210,7 @@ def verify_credential_info():
                 webauthn_credential.public_key = str(
                     webauthn_credential.public_key, "utf-8"
                 )
-            user = User.query.filter_by(rollno=rollno).first()
+                user = User.query.filter_by(rollno=rollno).first()
 
             user.ukey = ukey
             user.display_name = display_name
@@ -315,14 +321,14 @@ def verify_assertion_attendance():
     attendance = Attendance.query.filter_by(roll_no=rollno, staff_id=staff_id).first()
     if attendance:
         return make_response(
-            jsonify({"fail": "Attendance has already been registered"}), 401
+            jsonify({"fail": "Attendance has already been registered"}), 200
         )
 
     # check if the attendance is given at the correct lat, long
     loc = Course.query.filter_by(latitude=latitude, longitude=longitude).first()
     if loc:
         return make_response(
-            jsonify({"fail": "Location Incorrect, Please be at correct location"}), 401
+            jsonify({"fail": "Location Incorrect, Please be at correct location"}), 200
         )
 
     location = Location(latitude=latitude, longitude=longitude)
@@ -330,6 +336,7 @@ def verify_assertion_attendance():
         roll_no=rollno,
         staff_id=staff_id,
         is_present=1,
+        is_fingerprint=1,
         logged_time=datetime.datetime.now(),
         period=period,
         location=location,
@@ -349,13 +356,16 @@ def GetDashboardData():
     print(student_rollno)
     print("--------------------------------")
 
-    if student_rollno == "undefined":
+    if student_rollno != "undefined":
         student_rollno = session['user_rollno']
-    fetch_user = db.session.query(User).filter(User.rollno == student_rollno).first()
-    user = DashboardSchema()
-    user_json = user.dump(fetch_user)
-    print(user_json)
-    return jsonify(user_json)
+        fetch_user = db.session.query(User).filter(User.rollno == student_rollno).first()
+        user = DashboardSchema()
+        user_json = user.dump(fetch_user)
+        # print(user_json)
+        return jsonify(user_json)
+    else:
+        return make_response(jsonify({"fail": "User does not exist."}), 401)
+
 
 
 # logout
@@ -367,7 +377,7 @@ def logout():
     else:
         print(session)
         print("77777777777777777777777777777777777777777777777777777777777")
-    session.clear()
+        session.clear()
     return make_response("logged out", 200)
 
 
@@ -391,10 +401,10 @@ def get_attendance_history():
     data = request.json
     attendance_history = (
         db.session.query(Attendance)
-            .filter(Attendance.roll_no == data["rollno"])
-            .filter(Attendance.staff_id == data["staff_code"])
-            .filter(Attendance.course_code == data["course_code"])
-            .all()
+        .filter(Attendance.roll_no == data["rollno"])
+        .filter(Attendance.staff_id == data["staff_code"])
+        .filter(Attendance.course_code == data["course_code"])
+        .all()
     )
     if not attendance_history:
         return jsonify({"fail": "Attendance history cannot be fetched"}, 401)

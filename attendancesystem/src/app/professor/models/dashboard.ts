@@ -29,5 +29,4 @@ export class Schedule{
 
 export class CourseSchedule{
     data: Schedule[];
-  
-}
+  }
