@@ -375,7 +375,7 @@ def verify_assertion_attendance():
     # check if the attendance is given at the correct lat, long
     loc = Course.query.filter_by(latitude=latitude,
                                  longitude=longitude).first()
-    if loc:
+    if not loc:
         return make_response(
             jsonify(
                 {"fail": "Location Incorrect, Please be at correct location"}),
