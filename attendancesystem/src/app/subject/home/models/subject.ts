@@ -8,6 +8,7 @@ export class CourseSchedule{
     data: Schedule[];
     latitude:number;
     longitude:number;
+  certificate : string;
 }
 
 

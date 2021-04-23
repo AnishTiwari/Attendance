@@ -25,6 +25,7 @@ def login_required(f):
 def staff_login_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
+        print(session)
         if 'user_is_authenticated' not in session or 'is_staff' not in session or not session['is_staff']:
             abort(401)
         return f(*args, **kwargs)

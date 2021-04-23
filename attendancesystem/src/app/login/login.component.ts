@@ -56,7 +56,7 @@ export class LoginComponent implements OnInit {
 		}
 
 		if (data.is_staff)
-		    this._router.navigate(['staff/' + data.login_rollno], { state: { 'user_id': data.student_id } });
+		    this._router.navigate(['staff/' + data.student_id], { state: { 'user_id': data.student_id } });
 		else
 		    this._router.navigate(['student'], { state: { 'user_id': data.staff_id } });
 

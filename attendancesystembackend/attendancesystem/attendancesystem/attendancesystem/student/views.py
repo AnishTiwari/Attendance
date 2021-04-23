@@ -72,8 +72,9 @@ def login_password():
         required_fingerprint = False
         if user.credential_id is None:
             required_fingerprint = True
-            session['user_is_authenticated'] = True
-            session['user_rollno'] = rollno
+
+        session['user_is_authenticated'] = True
+        session['user_rollno'] = rollno
 
         if user.is_staff:
             session['is_staff'] = True

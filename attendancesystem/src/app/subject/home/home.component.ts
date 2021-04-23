@@ -4,6 +4,7 @@ import { FormBuilder, FormGroup, FormControl } from "@angular/forms";
 import { BaseService } from '../../app.service';
 import { Router, ActivatedRoute } from '@angular/router';
 import { DOCUMENT } from '@angular/common';
+import { DomSanitizer} from '@angular/platform-browser';
 
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { CourseSchedule, timeCourse } from './models/subject';
@@ -20,10 +21,10 @@ export class HomeComponent implements OnInit {
   public timeCourse: timeCourse = new timeCourse();
   public id: string;
   public day_period;
-  constructor(@Inject(DOCUMENT) document, private BaseService: BaseService, private matsnackbar: MatSnackBar, private activatedRoute: ActivatedRoute, private _router: Router) { }
+  constructor(@Inject(DOCUMENT) document,private sanitizer: DomSanitizer, private BaseService: BaseService, private matsnackbar: MatSnackBar, private activatedRoute: ActivatedRoute, private _router: Router) { }
 public start_time:string;
 public end_time:string;
-
+  public certificateUrl: any;
   CourseLocationForm: FormGroup;
   TimeCourseForm: FormGroup;
   ngOnInit() {
@@ -42,7 +43,7 @@ public end_time:string;
           let idString: string = this.courseschedule.data[i].day.toString() + this.courseschedule.data[i].period.toString();
           document.getElementById(idString).innerHTML = "<img src='assets/images/check.svg' style='height:20px; cursor:pointer;' >";
         }
-
+this.certificateUrl = this.sanitizer.bypassSecurityTrustResourceUrl("data:application/pdf;base64,"+ this.courseschedule.certificate);
         return this.courseschedule;
       },
         (error) => {

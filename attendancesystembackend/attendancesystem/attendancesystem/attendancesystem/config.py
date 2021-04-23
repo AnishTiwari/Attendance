@@ -6,7 +6,7 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 class Config(object):
 
     # general configs
-    FRONTEND_URL = "1ad4ec687520.ngrok.io"
+    FRONTEND_URL = "dc4cd3073a4e.ngrok.io"
     # Database --------------------------
     SQLALCHEMY_DATABASE_URI = "mysql://root:@localhost/attendancesystem"
     SQLALCHEMY_ECHO = True
@@ -16,3 +16,7 @@ class Config(object):
     SESSION_PERMANENT = False
     SESSION_TYPE = 'filesystem'
     # --------------------------------------------
+
+    # Certificate Media
+    COURSE_CERTIFICATE_FOLDER = "coursefolder"
+    PROFESSOR_CERTIFICATE_FOLDER = "professorfolder"

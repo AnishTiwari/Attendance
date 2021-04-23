@@ -1,6 +1,11 @@
 from flask import Blueprint, request, jsonify, make_response
 from sqlalchemy.orm import load_only
 
+import os
+
+from .. import app
+
+from ..config import Config
 from ..student.models import *
 from ..student.types import *
 from ..student import util
@@ -26,13 +31,22 @@ def get_course_schedule(variable):
             .filter(Course.course_code == variable)
             .all()
     )
+    
     schd_schema = CourseScheduleSchema(many=True)
     post_json = schd_schema.dump(db_val)
     print(post_json)
     print(loc[0].latitude)
 
+    root_path = os.path.dirname(app.instance_path)
+    media_path = root_path + '/media/' + Config.COURSE_CERTIFICATE_FOLDER+ '/' + variable+'/'
+
+    import base64
+
+    with open(media_path + variable + ".pdf", "rb") as pdf_file:
+        encoded_string = base64.b64encode(pdf_file.read())
+    
     return jsonify(
-        {"data": post_json, "latitude": loc[0].latitude, "longitude": loc[0].longitude}
+        {"data": post_json, "latitude": loc[0].latitude, "longitude": loc[0].longitude, "certificate": encoded_string.decode("utf-8")}
     )
 
 
