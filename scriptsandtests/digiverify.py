@@ -1,6 +1,9 @@
 # *-* coding: utf-8 *-*
 from endesive import pdf
 
+'''alter table user_course add 
+column is_course_completed boolean 
+default 0;''''
 
 def main():
     trusted_cert_pems = (

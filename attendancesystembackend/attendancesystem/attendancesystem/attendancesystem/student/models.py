@@ -17,6 +17,7 @@ user_course = db.Table(
     "user_course",
     db.Column("course_id", db.Integer, db.ForeignKey("course.id")),
     db.Column("user_id", db.Integer, db.ForeignKey("user.id")),
+    db.Column("is_course_completed", db.Boolean, default=0)
 )
 
 schedule_course = db.Table(

@@ -129,3 +129,9 @@ class StaffScheduleSchema(Schema):
 class TimeCourseSchema(Schema):
     start_time = fields.Time()
     end_time = fields.Time()
+
+
+class CourseCompletionSchema(Schema):
+    rollno = fields.Str()
+    is_course_completed = fields.Bool()
+    username = fields.Str()

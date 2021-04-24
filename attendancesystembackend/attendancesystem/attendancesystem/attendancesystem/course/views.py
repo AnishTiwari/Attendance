@@ -1,4 +1,4 @@
-from flask import Blueprint, request, jsonify, make_response
+from flask import Blueprint, request, jsonify, make_response, session
 from sqlalchemy.orm import load_only
 
 import os
@@ -18,36 +18,31 @@ course = Blueprint("course", __name__)
 @util.login_required
 def get_course_schedule(variable):
     fields = ["latitude", "longitude"]
-    loc = (
-        db.session.query(Course)
-            .filter(Course.course_code == variable)
-            .options(load_only(*fields))
-            .all()
-    )
+    loc = (db.session.query(Course).filter(
+        Course.course_code == variable).options(load_only(*fields)).all())
 
-    db_val = (
-        db.session.query(Schedule)
-            .join(Course, Schedule.courses)
-            .filter(Course.course_code == variable)
-            .all()
-    )
-    
+    db_val = (db.session.query(Schedule).join(
+        Course, Schedule.courses).filter(Course.course_code == variable).all())
+
     schd_schema = CourseScheduleSchema(many=True)
     post_json = schd_schema.dump(db_val)
     print(post_json)
     print(loc[0].latitude)
 
     root_path = os.path.dirname(app.instance_path)
-    media_path = root_path + '/media/' + Config.COURSE_CERTIFICATE_FOLDER+ '/' + variable+'/'
+    media_path = root_path + '/media/' + Config.COURSE_CERTIFICATE_FOLDER + '/' + variable + '/'
 
     import base64
 
     with open(media_path + variable + ".pdf", "rb") as pdf_file:
         encoded_string = base64.b64encode(pdf_file.read())
-    
-    return jsonify(
-        {"data": post_json, "latitude": loc[0].latitude, "longitude": loc[0].longitude, "certificate": encoded_string.decode("utf-8")}
-    )
+
+    return jsonify({
+        "data": post_json,
+        "latitude": loc[0].latitude,
+        "longitude": loc[0].longitude,
+        "certificate": encoded_string.decode("utf-8")
+    })
 
 
 @course.route("updateLocation", methods=["POST"])
@@ -55,11 +50,13 @@ def get_course_schedule(variable):
 def update_course_location():
     data = request.json
     print(data)
-    res = (
-        db.session.query(Course)
-            .filter(Course.course_code == data["course_code"])
-            .update({"latitude": data["latitude"], "longitude": data["longitude"]})
-    )
+    res = (db.session.query(Course).filter(
+        Course.course_code == data["course_code"]).update({
+            "latitude":
+            data["latitude"],
+            "longitude":
+            data["longitude"]
+        }))
 
     if not res:
         return make_response(db.error, 410)
@@ -72,12 +69,8 @@ def update_course_location():
 @util.login_required
 def get_course_students(course_code):
     fields = ["username", "rollno"]
-    data = (
-        User.query.join(User.courses)
-            .filter(Course.course_code == course_code)
-            .options(load_only(*fields))
-            .all()
-    )
+    data = (User.query.join(User.courses).filter(
+        Course.course_code == course_code).options(load_only(*fields)).all())
     print(data)
     json = StudentsSchema(many=True)
     val = json.dump(data)
@@ -88,12 +81,8 @@ def get_course_students(course_code):
 @util.login_required
 def get_course_feedbacks(course_code):
     fields = ["rating", "comment"]
-    data = (
-        db.session.query(Feedback)
-            .filter(Feedback.course_code == course_code)
-            .options(load_only(*fields))
-            .all()
-    )
+    data = (db.session.query(Feedback).filter(
+        Feedback.course_code == course_code).options(load_only(*fields)).all())
     json = CourseFeedbackSchema(many=True)
     val = json.dump(data)
     return jsonify({"data": val})
@@ -106,13 +95,10 @@ def get_time_for_course(course_code, day_period):
         day, period = list(day_period)
     except:
         day, period = 0, day_period
-    loc = (
-        db.session.query(Schedule)
-            .join(Course, Schedule.courses)
-            .filter(Course.course_code == course_code)
-            .filter(Schedule.day == day, Schedule.period == period)
-            .first()
-    )
+    loc = (db.session.query(Schedule).join(
+        Course,
+        Schedule.courses).filter(Course.course_code == course_code).filter(
+            Schedule.day == day, Schedule.period == period).first())
     json = TimeCourseSchema()
     val = json.dump(loc)
 
@@ -125,13 +111,9 @@ def update_course_time():
     print(request.json)
     data = request.json
     day, period = list(str(data["day_period"]))
-    res = (
-        db.session.query(Schedule)
-            .join(Course, Schedule.courses)
-            .filter(Course.course_code == data["course_code"])
-            .filter(Schedule.day == day, Schedule.period == period)
-            .first()
-    )
+    res = (db.session.query(Schedule).join(Course, Schedule.courses).filter(
+        Course.course_code == data["course_code"]).filter(
+            Schedule.day == day, Schedule.period == period).first())
 
     if not res:
         return make_response(db.error, 410)
@@ -145,11 +127,50 @@ def update_course_time():
 @course.route("getStudentAttendance/<course_code>/<roll_no>", methods=["GET"])
 @util.login_required
 def get_student_attendance(course_code, roll_no):
-    attendance = (db.session.query(Attendance)
-                  .filter(Attendance.course_code == course_code)
-                  .filter(Attendance.roll_no == roll_no)
-                  .all())
+    attendance = (db.session.query(Attendance).filter(
+        Attendance.course_code == course_code).filter(
+            Attendance.roll_no == roll_no).all())
     json = AttendanceSchema(many=True)
     val = json.dump(attendance)
 
     return jsonify({"data": val})
+
+
+# Course Completion home page
+@course.route("coursecompletion/<course_code>", methods=["GET"])
+@util.login_required
+def get_course_completion(course_code):
+    staff = (db.session.query(Staff).filter(
+        Staff.staff_id_no == session.get('user_rollno')).first())
+    course = (db.session.query(Course).filter(
+        Course.course_code == course_code).filter(
+            Course.staff_id == staff.id).first())
+    student_data = (db.session.query(User.username,User.rollno, user_course).filter(
+        user_course.c.course_id == course.id)
+                    .filter(User.id == user_course.c.user_id).all())
+    json = CourseCompletionSchema(many=True)
+    val = json.dump(student_data)
+    print(val)
+    return jsonify({"data": val})
+
+
+# Course Professor Available Digital Signature
+@course.route("getprofessordigitalsignature/", methods=["GET"])
+@util.login_required
+def get_professor_digital_signature():
+    staff_id = session.get('user_rollno')
+    
+    root_path = os.path.dirname(app.instance_path)
+    media_path = root_path + '/media/' + Config.PROFESSOR_CERTIFICATE_FOLDER + '/' + staff_id + '/'
+
+    import base64
+    encoded_string = []
+    for filename in os.listdir(media_path):
+        if filename.endswith(".png"):
+            with open(os.path.join(media_path, filename), "rb") as image_file:
+                encoded_string.append({"file": base64.b64encode(image_file.read()).decode("utf-8"), "name":filename})
+
+    print(encoded_string)
+    return jsonify({"data": encoded_string})
+
+    

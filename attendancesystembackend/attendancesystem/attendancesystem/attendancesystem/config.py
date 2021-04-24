@@ -6,7 +6,7 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 class Config(object):
 
     # general configs
-    FRONTEND_URL = "dc4cd3073a4e.ngrok.io"
+    FRONTEND_URL = "4625ad888c0f.ngrok.io"
     # Database --------------------------
     SQLALCHEMY_DATABASE_URI = "mysql://root:@localhost/attendancesystem"
     SQLALCHEMY_ECHO = True

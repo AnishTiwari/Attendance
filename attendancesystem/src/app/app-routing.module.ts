@@ -10,6 +10,7 @@ import{ HomeComponent } from './subject/home/home.component';
 import{ StudentsComponent } from './subject/students/students.component';
 import{ FeedbacksComponent } from './subject/feedbacks/feedbacks.component';
 import{ AnalyticsComponent } from './subject/analytics/analytics.component';
+import { CoursecompletionComponent } from './subject/coursecompletion/coursecompletion.component';
 
 const routes: Routes = [
 {path:'', component:LoginComponent},
@@ -24,7 +25,7 @@ const routes: Routes = [
     {path: 'students', component:StudentsComponent},
     {path: 'feedbacks', component:FeedbacksComponent},
     {path: 'analytics', component:AnalyticsComponent},
-
+    {path: 'coursecompletion', component: CoursecompletionComponent},
   ]
 },
 {path:"**", redirectTo: ''},

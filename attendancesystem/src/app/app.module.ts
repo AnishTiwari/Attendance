@@ -22,6 +22,8 @@ import { AnalyticsComponent } from './subject/analytics/analytics.component';
 import { AttendanceComponent } from './subject/attendance/attendance.component';
 import { MatDialogModule } from '@angular/material/dialog';
 import { TimetableComponent } from './professor/timetable/timetable.component';
+import { CoursecompletionComponent } from './subject/coursecompletion/coursecompletion.component';
+import { ProfessordigisignComponent } from './subject/coursecompletion/professordigisign/professordigisign.component';
 
 @NgModule({
   declarations: [
@@ -37,7 +39,9 @@ import { TimetableComponent } from './professor/timetable/timetable.component';
     FeedbacksComponent,
     AnalyticsComponent,
     AttendanceComponent,
-    TimetableComponent
+    TimetableComponent,
+    CoursecompletionComponent,
+    ProfessordigisignComponent
   ],
   imports: [
     BrowserModule,
