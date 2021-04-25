@@ -372,5 +372,18 @@ export class StudentComponent implements OnInit {
 				});
 
 	}
+
+  public showCompletionCertificate(course_code:string){
+	  this.BaseService.addJson("showcompletioncertificate",{"course_code":course_code})
+	    .subscribe((data:any)=>{
+    const linkSource = "data:application/pdf;base64, "+ data.file;
+    const downloadLink = document.createElement("a");
+    const fileName = course_code+".pdf";
+
+    downloadLink.href = linkSource;
+    downloadLink.download = fileName;
+    downloadLink.click();
+	    });
+	}
 }
 

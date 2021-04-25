@@ -6,5 +6,5 @@ export class course_details {
     staff: staff;
     id:number;
     schedules: days[];
-
+  is_course_completed: boolean;
 }

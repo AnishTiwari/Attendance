@@ -102,4 +102,12 @@ button{
 button:disabled {
     cursor: not-allowed !important;
     pointer-events: all !important;
-  }
+}
+
+.star{
+
+    height: 50px;
+position: absolute;
+right: 10px;
+top: 10px;
+}

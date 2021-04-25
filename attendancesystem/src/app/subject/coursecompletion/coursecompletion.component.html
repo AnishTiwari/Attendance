@@ -22,7 +22,6 @@ width:0px;
                         height="50px"
 			/>
 		      </button>
-<div class="container-fluid">
   <div class="table-responsive">
     <table class="table table-light table-hover text-center">
         <thead>
@@ -41,14 +40,17 @@ width:0px;
             <td>{{ data.rollno }}</td>
             <td>{{ data.username }}</td>
 	    
-            <td>{{ data.is_course_completed  }}</td>
+            <td  [ngClass]="{
+            'table-success' : data.is_course_completed,
+            'table-danger' : !data.is_course_completed
+         }" >{{ data.is_course_completed  }}</td>
 	    <td>
 <button  (click)="issuecertificate(data.rollno)"
          [disabled]="data.is_course_completed" >
   Issue Certificate</button>
 	    </td>
 	    <td>
-  <button 
+  <button (click)="revokeCertificate(data.rollno)"
          [disabled]="!data.is_course_completed" >
            Revoke Certificate</button>
 </td>
@@ -58,4 +60,3 @@ width:0px;
       </table>
     
 </div>    
-    </div>

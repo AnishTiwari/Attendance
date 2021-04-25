@@ -7,9 +7,12 @@ from flask import request, make_response, jsonify, session
 from webauthn import webauthn
 
 from ..config import Config
+from .. import app
+
+import base64
 
 from . import util
-from .models import User, db, Location, Attendance, Feedback, Course
+from .models import User, db, Location, Attendance, Feedback, Course, user_course
 from .types import *
 
 ADDR: str = Config.FRONTEND_URL
@@ -411,7 +414,12 @@ def GetDashboardData():
             User.rollno == student_rollno).first()
         user = DashboardSchema()
         user_json = user.dump(fetch_user)
-        # print(user_json)
+
+        for course in user_json["courses"]:
+            res = (db.session.query(user_course.c.is_course_completed).filter(
+                user_course.c.user_id == fetch_user.id).filter(
+                    user_course.c.course_id == course["id"]).first())
+            course["is_course_completed"] = res[0]
         return jsonify(user_json)
     else:
         return make_response(jsonify({"fail": "User does not exist."}), 401)
@@ -427,7 +435,7 @@ def logout():
         print(session)
         print("77777777777777777777777777777777777777777777777777777777777")
         session.clear()
-    return make_response("logged out", 200)
+    return make_response(jsonify({"data":"logged out"}), 200)
 
 
 # API : feedback POST
@@ -457,3 +465,20 @@ def get_attendance_history():
     attendance_history_ = AttendanceHistorySchema(many=True)
     post_json = attendance_history_.dump(attendance_history)
     return jsonify({"history": post_json})
+
+
+@student.route("showcompletioncertificate", methods=["POST"])
+def show_completion_certificate():
+    data = request.json
+
+    root_path = os.path.dirname(app.instance_path)
+    student_media_path = root_path + '/media/' + Config.STUDENT_CERTIFICATE_FOLDER + '/' + session.get(
+        'user_rollno') + '/' + data["course_code"] + ".pdf"
+    if os.path.isfile(student_media_path):
+        with open(student_media_path, "rb") as image_file:
+            return jsonify({
+                "file":
+                base64.b64encode(image_file.read()).decode("utf-8"),
+                "name":
+                data["course_code"] + ".pdf"
+            })

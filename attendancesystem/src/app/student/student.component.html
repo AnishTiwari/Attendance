@@ -164,6 +164,8 @@
             <div [ngStyle]="{ background: getRandomColor() }" class="card">
               <div class="">
                 <div class="card-body d-flex flex-column">
+		  
+		  <img style="cursor:pointer;" *ngIf="details.is_course_completed" (click)="showCompletionCertificate(details.course_code)"  class="star" src="assets/icons/star.svg" />
                   <h5 class="card-title font-weight-bold">
                     <a
                       >{{ details.course_code }} -

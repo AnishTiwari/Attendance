@@ -95,5 +95,20 @@ export class ProfessorComponent implements OnInit {
 
 	};
     }
+  
+	public logout(): void {
+		this.BaseService
+			.add<any[]>('logout', {}).subscribe((data: any) => {
+				this._router.navigateByUrl('login');
+			},
+				(error) => {
+					this.matsnackbar.open("Error", "error", {
+						duration: 3000,
+					});
+
+				});
+		this._router.navigateByUrl('login');
+
+	}
 
 }

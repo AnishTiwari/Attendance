@@ -201,9 +201,10 @@ def save_digital_sign():
 
     res = request.json
     for r in res:
-        
-        dig = (db.session.query(DigitalSignature).filter(DigitalSignature.filename == r['name'])
-         .filter(DigitalSignature.staff_id == staff_id).first())
+
+        dig = (db.session.query(DigitalSignature).filter(
+            DigitalSignature.filename == r['name']).filter(
+                DigitalSignature.staff_id == staff_id).first())
         dig.is_default = r['is_default']
 
     db.session.commit()
@@ -218,33 +219,31 @@ def invoke_certificate():
     staff = (db.session.query(User).filter(
         Staff.staff_id_no == session.get('user_rollno')).first())
 
-    
     staff_id = (db.session.query(Staff.id).filter(
         Staff.staff_id_no == session.get('user_rollno')).first())
 
-    default_sign_filename = (db.session.query(DigitalSignature.filename)
-                    .filter(DigitalSignature.staff_id== staff_id)
-                    .filter(DigitalSignature.is_default ==  True)
-                    .first())
+    default_sign_filename = (db.session.query(
+        DigitalSignature.filename).filter(
+            DigitalSignature.staff_id == staff_id).filter(
+                DigitalSignature.is_default == True).first())
     print(default_sign_filename[0])
 
     root_path = os.path.dirname(app.instance_path)
     professor_media_path = root_path + '/media/' + Config.PROFESSOR_CERTIFICATE_FOLDER + '/' + session.get(
         'user_rollno') + '/' + default_sign_filename[0]
-    
+
     post_data = request.json
 
-    student_id = (db.session.query(User.id)
-                  .filter(User.rollno == post_data["rollno"])
-                  .first())
-    course_id = (db.session.query(Course.id)
-                 .filter(Course.course_code == post_data["course_code"])
-                 .first())
+    student_id = (db.session.query(
+        User.id).filter(User.rollno == post_data["rollno"]).first())
+    course_id = (db.session.query(Course.id).filter(
+        Course.course_code == post_data["course_code"]).first())
 
-    course_media_path = root_path + '/media/' + Config.COURSE_CERTIFICATE_FOLDER + '/' + post_data['course_code']+ '/' + post_data['course_code'] + ".pdf"
+    course_media_path = root_path + '/media/' + Config.COURSE_CERTIFICATE_FOLDER + '/' + post_data[
+        'course_code'] + '/' + post_data['course_code'] + ".pdf"
 
     keys_path = root_path + '/media/keys'
-    
+
     date = datetime.datetime.utcnow() - datetime.timedelta(hours=12)
     date = date.strftime("D:%Y%m%d%H%M%S+00'00'")
     dct = {
@@ -273,15 +272,47 @@ def invoke_certificate():
     datau = open(fname, "rb").read()
     datas = cms.sign(datau, dct, p12[0], p12[1], p12[2], "sha256")
 
-    student_media_path = root_path + '/media/' + Config.STUDENT_CERTIFICATE_FOLDER + '/' + post_data["rollno"] +"/"
+    student_media_path = root_path + '/media/' + Config.STUDENT_CERTIFICATE_FOLDER + '/' + post_data[
+        "rollno"] + "/"
 
-    signed_file_name = student_media_path + post_data["course_code"] +".pdf"
+    signed_file_name = student_media_path + post_data["course_code"] + ".pdf"
     with open(signed_file_name, "wb") as fp:
         fp.write(datau)
         fp.write(datas)
 
-    result = db.session.execute('Update user_course set is_course_completed=True Where user_id = :student_id and course_id = :course_id',
-                                {'student_id': student_id, "course_id": course_id})
+    result = db.session.execute(
+        'Update user_course set is_course_completed=True Where user_id = :student_id and course_id = :course_id',
+        {
+            'student_id': student_id,
+            "course_id": course_id
+        })
     db.session.commit()
 
     return jsonify({"data": "invoked"})
+
+
+@course.route("revokecertificate", methods=["POST"])
+@util.login_required
+def revoke_certificate():
+    post_data = request.json
+
+    student_id = (db.session.query(
+        User.id).filter(User.rollno == post_data["rollno"]).first())
+    course_id = (db.session.query(Course.id).filter(
+        Course.course_code == post_data["course_code"]).first())
+    result = db.session.execute(
+        'Update user_course set is_course_completed=False Where user_id = :student_id and course_id = :course_id',
+        {
+            'student_id': student_id,
+            "course_id": course_id
+        })
+    db.session.commit()
+    root_path = os.path.dirname(app.instance_path)
+
+    student_media_path = root_path + '/media/' + Config.STUDENT_CERTIFICATE_FOLDER + '/' + post_data[
+        "rollno"] + "/"
+
+    certificate_path = student_media_path + post_data["course_code"] + ".pdf"
+    os.remove(certificate_path)
+
+    return jsonify({"data": "Revoked"})

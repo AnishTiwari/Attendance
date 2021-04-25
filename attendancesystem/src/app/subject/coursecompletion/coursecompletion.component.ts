@@ -38,12 +38,36 @@ export class CoursecompletionComponent implements OnInit {
 
   public issuecertificate(rollno:string){
     console.log(rollno);
-
-
     this.BaseService.addJson("course/invokecertificate", {"rollno":rollno, "course_code":this.course_code})
       .subscribe((data) =>{
-	console.log(data);
-      });
+
+this.matsnackbar.open("Certificate Issued", "success", {
+          duration: 4000,
+        });
+      } ,
+      (error)=>{
+        this.matsnackbar.open(error.message, "error", {
+          duration: 4000,
+        });
+      }
+		);
+  }
+
+  public revokeCertificate(rollno:string){
+
+    this.BaseService.addJson("course/revokecertificate", {"rollno":rollno, "course_code":this.course_code})
+      .subscribe((data) =>{
+
+this.matsnackbar.open("Certificate Revoked", "success", {
+          duration: 4000,
+        });
+      } ,
+      (error)=>{
+        this.matsnackbar.open(error.message, "error", {
+          duration: 4000,
+        });
+      }
+		);
   }
   
  public viewProfessorDigitalSignature()  {
