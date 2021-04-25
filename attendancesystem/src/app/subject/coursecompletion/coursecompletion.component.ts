@@ -4,7 +4,6 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 
-import { DigitalSignatures } from './professordigisign/models/digitalsign.models';
 import { CourseCompletion } from './models/coursecompletion';
 import { ProfessordigisignComponent } from './professordigisign/professordigisign.component'
 @Component({
@@ -14,6 +13,7 @@ import { ProfessordigisignComponent } from './professordigisign/professordigisig
 })
 export class CoursecompletionComponent implements OnInit {
 
+  
   constructor(private BaseService: BaseService,  private activatedRoute: ActivatedRoute,private matsnackbar: MatSnackBar, private matdialog: MatDialog) { }
   public course_code: string;
   
@@ -39,13 +39,18 @@ export class CoursecompletionComponent implements OnInit {
   public issuecertificate(rollno:string){
     console.log(rollno);
 
+
+    this.BaseService.addJson("course/invokecertificate", {"rollno":rollno, "course_code":this.course_code})
+      .subscribe((data) =>{
+	console.log(data);
+      });
   }
   
  public viewProfessorDigitalSignature()  {
     this.BaseService.getAll("course/getprofessordigitalsignature/")
     .subscribe(
       (data)=>{
-        this.matdialog.open(ProfessordigisignComponent,{width:'100%', data:{DigitalSignatures:data}});
+        this.matdialog.open(ProfessordigisignComponent,{width:'60%', data:{digitalsignatures:data}});
         console.log(data);
       }
       ,

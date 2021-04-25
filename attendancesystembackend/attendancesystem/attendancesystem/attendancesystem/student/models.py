@@ -11,6 +11,15 @@ class Staff(db.Model):
     staff_name = db.Column(db.String(40))
     staff_id_no = db.Column(db.Integer)
     courses = db.relationship("Course", backref="staff")
+    digitalsignatures = db.relationship("DigitalSignature", backref="staff")
+
+
+class DigitalSignature(db.Model):
+    __tablename__ = "digitalsignature"
+    id = db.Column(db.Integer, primary_key=True)
+    staff_id = db.Column(db.Integer, db.ForeignKey("staff.id"))
+    filename = db.Column(db.String(40))
+    is_default = db.Column(db.Boolean)
 
 
 user_course = db.Table(

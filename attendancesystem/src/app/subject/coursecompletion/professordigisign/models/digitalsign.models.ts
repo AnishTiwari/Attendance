@@ -1,9 +1,14 @@
 
 export class DigitalSignature{
   name: string;
-  file:string;
+  file: any;
+  is_default: boolean;
+}
+
+export class data{
+  data: DigitalSignature[];
 }
 export class DigitalSignatures{
 
-  data: DigitalSignature[];
+  digitalsignatures: data;
     }
