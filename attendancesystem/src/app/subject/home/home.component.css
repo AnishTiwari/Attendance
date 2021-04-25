@@ -6,3 +6,15 @@ label{
 }
 
 .modal-body{    background-color: lightslategrey !important;}
+
+hr {
+
+    color: #5e5050;
+    border: 1px solid;
+}
+
+.cc{
+
+    font-size: 18px;
+    color: #0b231e;
+}
