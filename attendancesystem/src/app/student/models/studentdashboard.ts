@@ -7,7 +7,6 @@ export class StudentDashboard {
     
 }
 
-
 export class Location{
 
     id:number;
@@ -24,4 +23,11 @@ export class AttendanceHistory{
 
 export class History{
     history : AttendanceHistory[];
+}
+
+
+export class VerifyCert{
+  certok:boolean;
+  hashok: bboolean;
+  signature_ok: boolean;
 }

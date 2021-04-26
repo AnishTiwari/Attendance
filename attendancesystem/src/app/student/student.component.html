@@ -165,7 +165,7 @@
               <div class="">
                 <div class="card-body d-flex flex-column">
 		  
-		  <img style="cursor:pointer;" *ngIf="details.is_course_completed" (click)="showCompletionCertificate(details.course_code)"  class="star" src="assets/icons/star.svg" />
+		  <img style="cursor:pointer;" *ngIf="details.is_course_completed" (click)="showCompletionCertificate(details.course_code)"  class="star" src="assets/icons/star.svg" alt="Golden Star" Title="Download Certificate"  />
                   <h5 class="card-title font-weight-bold">
                     <a
                       >{{ details.course_code }} -
@@ -178,7 +178,7 @@
                     </strong>
                   </p>
                   <div class="row justify-content-center">
-                    <div class="align-items-center col-4">
+                    <div [ngClass]="details.is_course_completed ? 'col-3' : 'col-4'" class="align-items-center ">
                       <button
                         data-toggle="modal"
                         data-target="#datamodal"
@@ -203,7 +203,7 @@
                       </button>
                     </div>
 
-                    <div class="align-items-center col-4">
+                    <div [ngClass]="details.is_course_completed ? 'col-3' : 'col-4'" class="align-items-center ">
                       <button
                         ng-show="details.is_attendance == true"
                         type="submit"
@@ -226,7 +226,7 @@
                       </button>
                     </div>
 
-                    <div class="align-items-center col-4">
+                    <div [ngClass]="details.is_course_completed ? 'col-3' : 'col-4'"  class="align-items-center">
                       <button
                         type="button"
                         data-toggle="modal"
@@ -249,7 +249,33 @@
                         />
                       </button>
                     </div>
-                  </div>
+
+		    <!-- verify certificate if present -->
+
+                    <div [ngClass]="details.is_course_completed ? 'col-3' : 'col-4'" class="align-items-center "  *ngIf="details.is_course_completed">
+                      <button
+                        type="button"
+                        class="btn btn-primary btn-sm form-control form-control-sm"
+                        style="
+                          cursor: pointer;
+                          border: 0px !important;
+                          color: #ffbf00 !important;
+                          background-color: white !important;
+                          "
+			title="Verify Certificate"
+                        (click)="verify(details.course_code)"
+                        id="submit"
+                      >
+                        <img
+                          src="assets/icons/verify.svg"
+                          class="text-center"
+                          width="25px"
+                          height="20px"
+                        />
+                      </button>
+                    </div>
+
+		  </div>
                 </div>
               </div>
             </div>

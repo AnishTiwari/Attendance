@@ -5,7 +5,7 @@ import { BaseService } from '../app.service';
 import { map, tap } from 'rxjs/operators';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
-import { StudentDashboard, History } from './models/studentdashboard';
+import { StudentDashboard, History, VerifyCert } from './models/studentdashboard';
 
 import * as base64js from 'base64-js';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -325,27 +325,27 @@ export class StudentComponent implements OnInit {
 
 							data["rollno"] = formdata.rollno;
 							data["staff_code"] = formdata.staff_code;
-						    data["course_code"] = formdata.course_code;
-						    data["period"] = formdata.period;
+							data["course_code"] = formdata.course_code;
+							data["period"] = formdata.period;
 							this.BaseService
 								.add<any[]>('verify_assertion_for_attendance', data)
 								.subscribe((data: any) => {
 									console.log(data);
-								    if(data.success){
-									this.crctTime[id] = true;
+									if (data.success) {
+										this.crctTime[id] = true;
 										this.matsnackbar.open("Your attendance has been registered", "success", {
-						duration: 5000,
-					});
+											duration: 5000,
+										});
 
-								    }
-								    else{
+									}
+									else {
 
 										this.matsnackbar.open("Sorry, your attendance could not be registered", "error", {
-						duration: 5000,
-					});
+											duration: 5000,
+										});
 
-								    }
-								    
+									}
+
 								})
 						}
 							, (error) => {
@@ -373,17 +373,44 @@ export class StudentComponent implements OnInit {
 
 	}
 
-  public showCompletionCertificate(course_code:string){
-	  this.BaseService.addJson("showcompletioncertificate",{"course_code":course_code})
-	    .subscribe((data:any)=>{
-    const linkSource = "data:application/pdf;base64, "+ data.file;
-    const downloadLink = document.createElement("a");
-    const fileName = course_code+".pdf";
+	public showCompletionCertificate(course_code: string) {
+		this.BaseService.addJson("showcompletioncertificate", { "course_code": course_code })
+			.subscribe((data: any) => {
+				const linkSource = "data:application/pdf;base64, " + data.file;
+				const downloadLink = document.createElement("a");
+				const fileName = course_code + ".pdf";
 
-    downloadLink.href = linkSource;
-    downloadLink.download = fileName;
-    downloadLink.click();
-	    });
+				downloadLink.href = linkSource;
+				downloadLink.download = fileName;
+				downloadLink.click();
+			});
+	}
+
+	public verify(course_code: string) {
+
+		this.BaseService.addJson("verifycertificate", { "course_code": course_code })
+	    .subscribe((data:VerifyCert) => {
+
+	      if(data.certok && data.hashok && data.signature_ok){
+					this.matsnackbar.open("Certficate OK!!", "Verified", {
+						duration: 5000,
+					});
+		
+	      }
+	      else{
+	this.matsnackbar.open("Certficate not OK!!", "Tampered", {
+						duration: 5000,
+					});
+	      }
+			}
+				, (error) => {
+					this.matsnackbar.open(error.message, "error", {
+						duration: 3000,
+					})
+				}
+			);
+
 	}
 }
+
 

@@ -11,6 +11,8 @@ from .. import app
 
 import base64
 
+from endesive import pdf
+
 from . import util
 from .models import User, db, Location, Attendance, Feedback, Course, user_course
 from .types import *
@@ -482,3 +484,29 @@ def show_completion_certificate():
                 "name":
                 data["course_code"] + ".pdf"
             })
+
+
+@student.route("verifycertificate", methods=["POST"])
+def verify_certificate():
+
+    post_data = request.json
+    course_code = post_data["course_code"]
+    student_rollno = session.get("user_rollno")
+    root_path = os.path.dirname(app.instance_path)
+   
+    keys_path = root_path + '/media/keys/'
+
+    trusted_cert_pems = (
+        open(keys_path+'private.pem', 'rt').read(), )
+
+
+    fname = root_path + '/media/' + Config.STUDENT_CERTIFICATE_FOLDER + '/' + session.get(
+    'user_rollno') + '/' + course_code  + ".pdf"
+    
+    try:
+        data = open(fname, 'rb').read()
+    except:
+        return jsonify({"signature_ok":False, "hashok":False, "certok":False})
+
+    (hashok, signatureok, certok) = pdf.verify(data, trusted_cert_pems)
+    return jsonify({"signature_ok":signatureok, "hashok":hashok, "certok":certok})
