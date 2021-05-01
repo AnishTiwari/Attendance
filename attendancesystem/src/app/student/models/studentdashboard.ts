@@ -28,6 +28,6 @@ export class History{
 
 export class VerifyCert{
   certok:boolean;
-  hashok: bboolean;
+  hashok: boolean;
   signature_ok: boolean;
 }

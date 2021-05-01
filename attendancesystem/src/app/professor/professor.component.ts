@@ -75,6 +75,12 @@ export class ProfessorComponent implements OnInit {
 	this._router.navigateByUrl('course/'+course_name);
     }
 
+
+    public navigateToLeave(){
+	this._router.navigateByUrl('manageleave');
+    }
+
+  
     public viewProfTimeTable(){
 	this.BaseService.getAll("staff/getTimeTable/"+this.id)
 	    .subscribe( (data) =>{

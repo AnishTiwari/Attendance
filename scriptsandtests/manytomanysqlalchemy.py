@@ -2,6 +2,7 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 
+#$env:FLASK_APP = "webapp"
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = "mysql://root:@localhost/attendancesystem"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True

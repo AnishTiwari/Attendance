@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 
 import { BaseService } from '../../app.service';
+import {Router} from '@angular/router';
 
 import { MatSnackBar } from '@angular/material/snack-bar';
 
@@ -14,7 +15,7 @@ import {HomeLeave} from "./models/manageleave.models";
 export class ManageleaveComponent implements OnInit {
 
   public homeLeave: HomeLeave;
-  constructor(private BaseService:BaseService, private matsnackbar: MatSnackBar) {
+  constructor(private BaseService:BaseService, private matsnackbar: MatSnackBar, private _router:Router) {
     this.homeLeave = new HomeLeave();
   }
 
@@ -31,7 +32,7 @@ export class ManageleaveComponent implements OnInit {
 	    this.matsnackbar.open(data.message, data.status, {
 		duration: 5000,
             });
-	
+	this.ngOnInit();
       }, 
 	(error:any) => {
             this.matsnackbar.open(error.message, "error", {
@@ -39,5 +40,21 @@ export class ManageleaveComponent implements OnInit {
             });
 	});
   }
+
+  
+	public logout(): void {
+		this.BaseService
+			.add<any[]>('logout', {}).subscribe((data: any) => {
+				this._router.navigateByUrl('login');
+			},
+				(error) => {
+					this.matsnackbar.open("Error", "error", {
+						duration: 3000,
+					});
+
+				});
+		this._router.navigateByUrl('login');
+
+	}
   
 }

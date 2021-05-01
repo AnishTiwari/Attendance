@@ -3,6 +3,10 @@ import { NgModule } from '@angular/core';
 import { HttpClientModule,HTTP_INTERCEPTORS } from '@angular/common/http';
 import { ReactiveFormsModule } from '@angular/forms';
 import {MatSnackBarModule} from '@angular/material/snack-bar'
+import { MatDatepickerModule } from '@angular/material/datepicker'  
+import { MatNativeDateModule } from '@angular/material/core'  
+import { MatFormFieldModule } from '@angular/material/form-field'
+import { MatCardModule } from '@angular/material/card'; 
 
 
 import { AppRoutingModule } from './app-routing.module';
@@ -24,6 +28,9 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { TimetableComponent } from './professor/timetable/timetable.component';
 import { CoursecompletionComponent } from './subject/coursecompletion/coursecompletion.component';
 import { ProfessordigisignComponent } from './subject/coursecompletion/professordigisign/professordigisign.component';
+import { LeaveComponent } from './leave/leave.component';
+import { ManageleaveComponent } from './professor/manageleave/manageleave.component';
+
 
 @NgModule({
   declarations: [
@@ -41,7 +48,9 @@ import { ProfessordigisignComponent } from './subject/coursecompletion/professor
     AttendanceComponent,
     TimetableComponent,
     CoursecompletionComponent,
-    ProfessordigisignComponent
+    ProfessordigisignComponent,
+    LeaveComponent,
+    ManageleaveComponent
   ],
   imports: [
     BrowserModule,
@@ -50,7 +59,11 @@ import { ProfessordigisignComponent } from './subject/coursecompletion/professor
     ReactiveFormsModule,
     MatSnackBarModule,
     BrowserAnimationsModule,
-    MatDialogModule
+	    MatDialogModule,
+	    MatCardModule,	    
+	    MatDatepickerModule,
+	    MatFormFieldModule,
+	    MatNativeDateModule
   ],
   providers: [{ provide: HTTP_INTERCEPTORS, useClass: CustomInterceptor, multi: true },],
   bootstrap: [AppComponent]

@@ -7,6 +7,7 @@
       crossorigin="anonymous"
     />
   </head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
   <script
     type="text/javascript"
     src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"
@@ -144,11 +145,32 @@
       </div>
     </div>
 
-    <nav class="navbar navbar-default navbar-fixed-top navbar-dark bg-dark p-1">
+    <nav class="navbar navbar-expand-lg navbar-default navbar-fixed navbar-dark bg-dark p-1">
       <a class="navbar-brand" href="/student">Dashboard</a>
-      <ul class="nav navbar-nav navbar-right">
-        <li><a style="color: white; cursor: pointer;" (click)="logout()">LOGOUT</a></li>
+
+<button class="navbar-toggler" type="button"   data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+      <div class="container collapse navbar-collapse" id="navbarSupportedContent">
+
+
+    <ul class="mr-auto navbar-nav">
+
+      <li class="nav-item active ">
+        <a class="nav-link " href="#">HOME </a>
+      </li>
+      <li class="nav-item">
+	<a class="nav-link" style="color: white; cursor: pointer;" href="leave">LEAVES</a>
+      </li>
+
+  
+ <li class="nav-item">
+	  <a class="nav-link" style="color: white; cursor: pointer;" (click)="logout()">LOGOUT</a>
+	</li>
     </ul>
+   
+    </div>
+      
     </nav>
     <div class="container-fluid mx-auto mt-2">
       <div>

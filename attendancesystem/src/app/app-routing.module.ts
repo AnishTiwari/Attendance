@@ -10,6 +10,9 @@ import{ HomeComponent } from './subject/home/home.component';
 import{ StudentsComponent } from './subject/students/students.component';
 import{ FeedbacksComponent } from './subject/feedbacks/feedbacks.component';
 import{ AnalyticsComponent } from './subject/analytics/analytics.component';
+import {LeaveComponent} from './leave/leave.component';
+import {ManageleaveComponent} from './professor/manageleave/manageleave.component';
+
 import { CoursecompletionComponent } from './subject/coursecompletion/coursecompletion.component';
 
 const routes: Routes = [
@@ -17,7 +20,8 @@ const routes: Routes = [
 {path:'login', component:LoginComponent},
 {path :'register', component:RegisterComponent},
 {path :'student', component:StudentComponent},
-{path :'staff/:id', component:ProfessorComponent},
+  {path :'staff/:id', component:ProfessorComponent},
+  {path :'manageleave', component:ManageleaveComponent},
 {path :'course/:id', component:SubjectComponent,
   children:[
     {path: '', component:HomeComponent},
@@ -28,6 +32,7 @@ const routes: Routes = [
     {path: 'coursecompletion', component: CoursecompletionComponent},
   ]
 },
+  {path:"leave", component:LeaveComponent},
 {path:"**", redirectTo: ''},
 ];
 

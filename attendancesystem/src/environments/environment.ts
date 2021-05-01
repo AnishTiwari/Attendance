@@ -4,8 +4,9 @@
 
 export const environment = {
   production: false,
-  server: "https://1d78f9702e30.ngrok.io/" // -> include trailing '/' 
+  server: "https://91e83ad41893.ngrok.io/" // -> include trailing '/' 
 };
+
 
 /*
  * For easier debugging in development mode, you can import the following file

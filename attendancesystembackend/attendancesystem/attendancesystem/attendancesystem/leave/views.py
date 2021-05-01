@@ -42,7 +42,10 @@ def leave_status_change():
     logged_time = request.form.get("logged_time")
     leave_id = request.form.get("id")
     status = request.form.get("status")
-    
+    if status == "approve":
+        status = "Approved"
+    else:
+        status = "Rejected"
     db_res = (db.session.query(Leave).
               filter(Leave.logged_time == logged_time)
               .filter(Leave.roll_no == rollno)

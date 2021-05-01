@@ -17,7 +17,9 @@ import { error } from '@angular/compiler/src/util';
 	styleUrls: ['./student.component.css']
 })
 export class StudentComponent implements OnInit {
-	feedbackform: FormGroup;
+
+  public nav_visible:boolean = true;
+  feedbackform: FormGroup;
 	private student_rollno: number;
 
 	crctTime: boolean[] = [];
@@ -392,9 +394,27 @@ export class StudentComponent implements OnInit {
 	    .subscribe((data:VerifyCert) => {
 
 	      if(data.certok && data.hashok && data.signature_ok){
-					this.matsnackbar.open("Certficate OK!!", "Verified", {
-						duration: 5000,
+
+		let snackbarref = this.matsnackbar.open("Signature OK!!", "Verified", {
+						duration: 1000,
 					});
+
+
+ snackbarref.afterDismissed().subscribe(() => {
+let hashsnackbarref = 		this.matsnackbar.open("Hash OK!!", "Verified", {
+						duration: 1000,
+					});
+
+   	hashsnackbarref.afterDismissed().subscribe(() => {
+
+		  	this.matsnackbar.open("Certficate OK!!", "Verified", {
+						duration: 1000,
+					});
+	
+		});
+	
+ });
+
 		
 	      }
 	      else{
