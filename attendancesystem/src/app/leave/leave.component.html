@@ -1,0 +1,96 @@
+
+<nav class="navbar navbar-expand-lg navbar-default navbar-fixed navbar-dark bg-dark p-1">
+  <a class="navbar-brand" href="/student">Leave Dashboard</a>
+
+  <button class="navbar-toggler" type="button"   data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <div class="container collapse navbar-collapse" id="navbarSupportedContent">
+    <ul class="mr-auto navbar-nav">
+      <li class="nav-item active ">
+        <a class="nav-link " (click)="getLeaveHome();">HOME </a>
+      </li>
+      <li class="nav-item">
+	<a class="nav-link" style="color: white; cursor: pointer;" (click)="IsRequestForLeave = true;IsLeaveHome=false ">Request Leave</a>
+      </li>
+      <li class="nav-item">
+	<a class="nav-link" style="color: white; cursor: pointer;" >LOGOUT</a>
+      </li>
+    </ul>
+  </div>
+</nav>
+
+<div *ngIf="IsLeaveHome">
+
+  <ng-container *ngFor="let item of homeLeave.data; let i = index">
+    <mat-card>
+      <div style="display: flex;">
+      <p> {{ item.start_date  | date: 'dd/MM/yyyy' }} </p>
+      <p> {{ item.end_date | date: 'dd/MM/yyyy' }} </p>
+      </div>
+ <div style="display: flex;">
+      <p> {{ item.status }} </p>
+      <p> {{ item.logged_time  | date: 'dd/MM/yyyy'}} </p>
+     </div>
+ <div style="display: flex;">     
+      <p> {{ item.additional_comments }} </p>
+ </div>
+  <div style="display: flex;">
+      <p>{{ item.reason }} </p>
+</div>
+    </mat-card>
+<br>
+</ng-container>
+</div>
+
+
+
+
+<div class="container" *ngIf="IsRequestForLeave">
+  <h1>Request For Leave </h1>
+  <form [formGroup]="leaveForm" (ngSubmit)="submit()"  >
+
+    <div class="form-row">  
+      <div class="form-group col-md-6">
+	<label class="col-sm-2 col-form-label">Leave Date Range</label>
+	
+	<mat-form-field>
+	  <mat-label>Enter date range</mat-label>
+	  <mat-date-range-input [rangePicker]="picker">
+	    <input (dateChange)="noOfDays = (leaveForm.value.End -leaveForm.value.Start)/(24 * 60 * 60 * 1000)" formControlName="Start"  matStartDate matInput placeholder="Start date">
+	    <input (dateChange)="noOfDays = (leaveForm.value.End -leaveForm.value.Start)/(24 * 60 * 60 * 1000)" formControlName="End" matEndDate matInput placeholder="End date">
+	  </mat-date-range-input>
+	  <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+	  <mat-date-range-picker #picker></mat-date-range-picker>
+	</mat-form-field>
+      </div>
+
+      <div class="form-group col-md-6">
+        <label for="file" class="col-sm-2 col-form-label">Attachments</label>
+        <input 
+          formControlName="Attachments"
+          id="file" type="file"   class="form-control"
+          (change)="onFileChange($event)">
+      </div>
+
+    </div>
+    
+    
+    <div class="form-row">
+      <div class="form-group">
+	<label class="col-form-label" for="Reason">Reason</label>
+	<input placeholder="Reason For Leave" type="text" formControlName="Reason"  class="form-control" id="Reason" >
+      </div>
+    </div>
+
+    <div class="form-row">
+
+      <div class="form-group">
+	<label for="AdditionalComments" class="col-form-label">Additonal Comments</label>
+	<textarea formControlName="Additional_comments"  class="form-control" id="AdditionalComments" rows="3"></textarea>
+      </div>
+    </div>
+
+    <button class="btn btn-primary" type="submit">Apply Leave For {{ noOfDays }} Days</button>
+  </form>
+</div>
