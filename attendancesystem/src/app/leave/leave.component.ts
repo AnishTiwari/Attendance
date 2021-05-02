@@ -1,9 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { Router } from '@angular/router';
 
 import { BaseService } from '../app.service';
-import {HomeLeave} from "./models/leave.models";
+import { HomeLeave } from "./models/leave.models";
 
 @Component({
 	selector: 'app-leave',
@@ -12,16 +13,16 @@ import {HomeLeave} from "./models/leave.models";
 })
 export class LeaveComponent implements OnInit {
 	public IsRequestForLeave: boolean = false;
-  public IsLeaveHome: boolean = true;
-  public leaveForm: FormGroup;
+	public IsLeaveHome: boolean = true;
+	public leaveForm: FormGroup;
 	public noOfDays: number;
-  public homeLeave:HomeLeave;
-  constructor(private BaseService: BaseService, private matsnackbar: MatSnackBar) {
-    this.homeLeave =new HomeLeave();
-  }
+	public homeLeave: HomeLeave;
+  constructor(private BaseService: BaseService, private matsnackbar: MatSnackBar,private _router: Router) {
+		this.homeLeave = new HomeLeave();
+	}
 
-  ngOnInit(): void {
-    this.getLeaveHome();
+	ngOnInit(): void {
+		this.getLeaveHome();
 		this.leaveForm = new FormGroup({
 			Start: new FormControl(),
 			End: new FormControl(),
@@ -43,7 +44,6 @@ export class LeaveComponent implements OnInit {
 	}
 
 	submit() {
-
 		this.BaseService.add("leave/requestforleave", this.leaveForm.value)
 			.subscribe((data) => {
 				console.log(data);
@@ -52,15 +52,35 @@ export class LeaveComponent implements OnInit {
 
 	}
 
-  public getLeaveHome(){
-	  this.IsLeaveHome=true;this.IsRequestForLeave=false
+	public getLeaveHome() {
+		this.IsLeaveHome = true; this.IsRequestForLeave = false
 
-	  this.BaseService.getAll("leave/getallleaves")
-	    .subscribe((data)=>{
-	      console.log(data);
-	      Object.assign(this.homeLeave, data);
-	      console.log(this.homeLeave);
-	    });
-	  
+		this.BaseService.getAll("leave/getallleaves")
+			.subscribe((data) => {
+				console.log(data);
+				Object.assign(this.homeLeave, data);
+				console.log(this.homeLeave);
+			});
+
 	}
+	public navigatestudent() {
+	  this._router.navigateByUrl("student");
+	}
+
+  
+  public navigatelogout() {
+	  		this.BaseService
+			.add<any[]>('logout', {}).subscribe((data: any) => {
+				this._router.navigateByUrl('login');
+			},
+				(error) => {
+					this.matsnackbar.open("Error", "error", {
+						duration: 3000,
+					});
+
+				});
+		this._router.navigateByUrl('login');
+
+	}
+
 }

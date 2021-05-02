@@ -411,6 +411,9 @@ def GetDashboardData():
     print(student_rollno)
     print("--------------------------------")
 
+    if student_rollno == "undefined":
+        student_rollno = session.get("user_rollno")
+        
     if student_rollno != "undefined":
         fetch_user = db.session.query(User).filter(
             User.rollno == student_rollno).first()

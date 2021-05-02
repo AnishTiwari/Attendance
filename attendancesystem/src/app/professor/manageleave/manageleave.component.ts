@@ -42,7 +42,7 @@ export class ManageleaveComponent implements OnInit {
   }
 
   
-	public logout(): void {
+	public navigatelogout(): void {
 		this.BaseService
 			.add<any[]>('logout', {}).subscribe((data: any) => {
 				this._router.navigateByUrl('login');

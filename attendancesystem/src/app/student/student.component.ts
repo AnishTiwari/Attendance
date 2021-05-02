@@ -18,8 +18,8 @@ import { error } from '@angular/compiler/src/util';
 })
 export class StudentComponent implements OnInit {
 
-  public nav_visible:boolean = true;
-  feedbackform: FormGroup;
+	public nav_visible: boolean = true;
+	feedbackform: FormGroup;
 	private student_rollno: number;
 
 	crctTime: boolean[] = [];
@@ -123,7 +123,6 @@ export class StudentComponent implements OnInit {
 
 				});
 		this._router.navigateByUrl('login');
-
 	}
 	//API 
 	public getAttendanceHistory(id: number) {
@@ -391,37 +390,37 @@ export class StudentComponent implements OnInit {
 	public verify(course_code: string) {
 
 		this.BaseService.addJson("verifycertificate", { "course_code": course_code })
-	    .subscribe((data:VerifyCert) => {
+			.subscribe((data: VerifyCert) => {
 
-	      if(data.certok && data.hashok && data.signature_ok){
+				if (data.certok && data.hashok && data.signature_ok) {
 
-		let snackbarref = this.matsnackbar.open("Signature OK!!", "Verified", {
+					let snackbarref = this.matsnackbar.open("Signature OK!!", "Verified", {
 						duration: 1000,
 					});
 
 
- snackbarref.afterDismissed().subscribe(() => {
-let hashsnackbarref = 		this.matsnackbar.open("Hash OK!!", "Verified", {
-						duration: 1000,
+					snackbarref.afterDismissed().subscribe(() => {
+						let hashsnackbarref = this.matsnackbar.open("Hash OK!!", "Verified", {
+							duration: 1000,
+						});
+
+						hashsnackbarref.afterDismissed().subscribe(() => {
+
+							this.matsnackbar.open("Certficate OK!!", "Verified", {
+								duration: 1000,
+							});
+
+						});
+
 					});
 
-   	hashsnackbarref.afterDismissed().subscribe(() => {
 
-		  	this.matsnackbar.open("Certficate OK!!", "Verified", {
-						duration: 1000,
-					});
-	
-		});
-	
- });
-
-		
-	      }
-	      else{
-	this.matsnackbar.open("Certficate not OK!!", "Tampered", {
+				}
+				else {
+					this.matsnackbar.open("Certficate not OK!!", "Tampered", {
 						duration: 5000,
 					});
-	      }
+				}
 			}
 				, (error) => {
 					this.matsnackbar.open(error.message, "error", {
@@ -430,6 +429,10 @@ let hashsnackbarref = 		this.matsnackbar.open("Hash OK!!", "Verified", {
 				}
 			);
 
+	}
+
+	public navigateLeave() {
+		  this._router.navigateByUrl('leave');
 	}
 }
 

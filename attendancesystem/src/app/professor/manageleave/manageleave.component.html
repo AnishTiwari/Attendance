@@ -1,8 +1,8 @@
 <nav class="navbar navbar-default navbar-fixed-top navbar-dark bg-dark p-1">
 
-  <a class="navbar-brand" (click)="ngOninit();">Dashboard</a>
+  <a class="navbar-brand" (click)="ngOnInit();">Dashboard</a>
     <ul class="nav navbar-nav ml-auto">
-  <li class="nav-item"><a style="color: white; cursor: pointer;" href="logout">LOGOUT</a></li>
+  <li class="nav-item"><a style="color: white; cursor: pointer;" (click)="navigatelogout()">LOGOUT</a></li>
     
     </ul>
   </nav>

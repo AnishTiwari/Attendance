@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Report</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <style>
+
+      body{
+                  font-size: 15px;
+              }
+
+      .blockquote {
+                          margin-bottom: 10px;
+                      }
+
+    </style>
+
+  </head>
+
+  <body>
+    <div class="container">
+      <br>
+      <div class="row">
+        <div class="col-4 mx-auto text-center">
+          <br><br>
+        </div>
+      </div>
+      <blockquote class="blockquote text-center">
+        <p class="mb-0">
+	  
+	  
+        </p>
+      </blockquote>
+      <br>
+
+      <form>
+	<div class="form-row">
+	  <div class="form-group col-md-6">
+	    <label for="inputEmail4">NAME</label>
+	    <input type="text" class="form-control" value="{{ name }}" id="inputEmail4">
+	  </div>
+	  <div class="form-group col-md-6">
+	    <label for="inputPassword4">ROLLNO</label>
+	    <input type="text" value="{{ rollno }}"  class="form-control" id="inputPassword4">
+	  </div>
+	</div>
+
+	<div class="form-row">
+	  <div class="form-group col-md-6">
+	    <label for="inputEmail4">START DATE</label>
+	    <input type="text" value="{{ start_date }}"  class="form-control" value="SHYAM" id="inputEmail4">
+	  </div>
+	  <div class="form-group col-md-6">
+	    <label for="inputPassword4">END DATE</label>
+	    <input type="text"  value="{{ end_date }}" class="form-control" id="inputPassword4">
+	  </div>
+	</div>
+	
+	<div class="form-group">
+	  <label for="inputAddress">REASON</label>
+	  <input type="text" value="{{ reason }}"  class="form-control" id="inputAddress" >
+	</div>
+	<div class="form-group">
+	  <label for="inputAddress2">ADDITIONAL COMMENTS</label>
+	  <textarea  row="3" class="form-control" id="inputAddress2" >
+	    {{ additional_comments }}
+	  </textarea>
+	</div>
+	<div class="form-row">
+	  <div class="form-group col-md-6">
+	    <label for="inputEmail4">NO OF DAYS</label>
+	    <input type="text" value="{{ no_of_days }}"  class="form-control"  id="inputEmail4">
+	  </div>
+	  <div class="form-group col-md-6">
+	    <label for="inputPassword4">ATTACHMENTS</label>
+	    <input type="text"  value="{{ attachments }}" class="form-control" id="inputPassword4">
+	  </div>
+	</div>
+
+	
+      </form>
+    </div>
+    <script>
+    </script>
+  </body>
+
+</html>
+
